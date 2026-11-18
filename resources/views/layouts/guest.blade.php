@@ -140,8 +140,11 @@
                         </figcaption>
                     </figure>
 
-                    <p class="mt-5 flex items-center justify-between text-[11px] text-slate-500">
-                        <span>&copy; {{ date('Y') }} Stoq</span>
+                    <p class="mt-5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                        <span class="inline-flex items-center gap-1.5">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true"></span>
+                            Stock levels synced in real time
+                        </span>
                         <span>Built for independent shops</span>
                     </p>
                 </div>

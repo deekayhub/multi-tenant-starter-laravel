@@ -76,7 +76,7 @@
                     <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2">
                         {{ auth()->check() ? 'Go to app' : 'Start free' }}
                     </a>
-                    <button type="button" @click="mobileOpen = !mobileOpen" :aria-expanded="mobileOpen" aria-expanded="false" aria-controls="mobile-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 lg:hidden">
+                    <button type="button" @click="mobileOpen = !mobileOpen" aria-expanded="false" aria-controls="mobile-menu" :aria-expanded="mobileOpen" class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 lg:hidden">
                         <span class="sr-only">Toggle navigation</span>
                         <svg x-show="!mobileOpen" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
                             <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />

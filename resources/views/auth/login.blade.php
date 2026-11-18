@@ -91,10 +91,10 @@
                 <button
                     type="button"
                     @click="visible = !visible"
-                    :aria-label="visible ? 'Hide password' : 'Show password'"
-                    :aria-pressed="visible"
                     aria-label="Show password"
                     aria-pressed="false"
+                    :aria-label="visible ? 'Hide password' : 'Show password'"
+                    :aria-pressed="visible"
                     class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-slate-400 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
                 >
                     <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x-show="! visible">
