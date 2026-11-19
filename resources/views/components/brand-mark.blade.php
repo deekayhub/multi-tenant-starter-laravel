@@ -1,0 +1,14 @@
+@props(['class' => 'h-8 w-8'])
+
+<svg {{ $attributes->merge(['class' => $class, 'viewBox' => '0 0 32 32', 'fill' => 'none', 'aria-hidden' => 'true']) }}>
+    <defs>
+        <linearGradient id="orbit-mark" x1="0" y1="0" x2="1" y2="1">
+            <stop stop-color="#60A5FA" />
+            <stop offset="1" stop-color="#4338CA" />
+        </linearGradient>
+    </defs>
+    <rect width="32" height="32" rx="9" fill="url(#orbit-mark)" />
+    <circle cx="16" cy="16" r="8.5" stroke="#FFFFFF" stroke-width="1.6" />
+    <ellipse cx="16" cy="16" rx="12" ry="4.8" stroke="#FFFFFF" stroke-width="1.4" transform="rotate(-30 16 16)" />
+    <circle cx="25" cy="10.5" r="2.2" fill="#FFFFFF" />
+</svg>

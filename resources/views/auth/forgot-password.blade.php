@@ -1,25 +1,34 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+<x-guest-layout :title="__('Reset password')">
+    <div class="border-b border-line pb-7">
+        <p class="eyebrow">{{ __('Account recovery') }}</p>
+        <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{{ __('Reset password.') }}</h1>
+        <p class="mt-3 text-sm leading-6 text-muted-foreground">
+            {{ __('Enter your email and we will send you a link to choose a new password.') }}
+        </p>
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <x-auth-session-status class="mt-7" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="mt-7 space-y-6">
         @csrf
 
-        <!-- Email Address -->
+        <x-form-error-summary :errors="$errors" />
+
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="email" :value="__('Email address')" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')" placeholder="you@example.com" required autofocus />
+            <x-input-error :messages="$errors->get('email')" name="email" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn-primary w-full">
+            {{ __('Email reset link') }}
+            <span aria-hidden="true">&rarr;</span>
+        </button>
     </form>
+
+    <p class="mt-8 border-t border-line pt-6 text-sm text-muted-foreground">
+        <a href="{{ route('login') }}" class="rounded font-bold text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            &larr; {{ __('Back to sign in') }}
+        </a>
+    </p>
 </x-guest-layout>

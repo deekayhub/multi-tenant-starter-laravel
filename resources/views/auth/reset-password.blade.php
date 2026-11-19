@@ -1,39 +1,38 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+<x-guest-layout :title="__('Choose password')">
+    <div class="border-b border-line pb-7">
+        <p class="eyebrow">{{ __('Account recovery') }}</p>
+        <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{{ __('Choose a password.') }}</h1>
+        <p class="mt-3 text-sm leading-6 text-muted-foreground">{{ __('Pick something new for your account.') }}</p>
+    </div>
+
+    <form method="POST" action="{{ route('password.store') }}" class="mt-7 space-y-5">
         @csrf
 
-        <!-- Password Reset Token -->
+        <x-form-error-summary :errors="$errors" />
+
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="email" :value="__('Email address')" />
+            <x-text-input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" name="email" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+            <x-input-label for="password" :value="__('New password')" />
+            <x-text-input id="password" type="password" name="password" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password')" name="password" />
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div>
+            <x-input-label for="password_confirmation" :value="__('Confirm password')" />
+            <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" name="password_confirmation" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn-primary w-full">
+            {{ __('Update password') }}
+            <span aria-hidden="true">&rarr;</span>
+        </button>
     </form>
 </x-guest-layout>

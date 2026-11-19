@@ -1,3 +1,133 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    /* COLOR — Skill SaaS default */
+    --color-primary: #2563EB;
+    --color-on-primary: #FFFFFF;
+    --color-secondary: #3B82F6;
+    --color-on-secondary: #000000;
+    --color-accent: #EA580C;
+    --color-on-accent: #000000;
+    --color-background: #F8FAFC;
+    --color-foreground: #1E293B;
+    --color-card: #FFFFFF;
+    --color-card-foreground: #1E293B;
+    --color-muted: #E9EFF8;
+    --color-muted-foreground: #475569;
+    --color-border: #E2E8F0;
+    --color-destructive: #DC2626;
+    --color-ring: #2563EB;
+
+    /* TYPE */
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /* SPACE — 4px base */
+    --space-2xs: 0.5rem;
+    --space-xs: 0.75rem;
+    --space-s: 1rem;
+    --space-m: 1.5rem;
+    --space-l: 2rem;
+    --space-xl: 3rem;
+
+    /* SHAPE & DEPTH */
+    --radius-card: 1rem;
+    --glass-blur: 16px;
+    --glass-border: 1px solid rgba(255, 255, 255, 0.7);
+
+    /* MOTION */
+    --dur-fast: 150ms;
+    --dur: 220ms;
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+    html {
+        color-scheme: light;
+        /* WCAG 2.2 AA: keep keyboard focus clear of the sticky app header. */
+        scroll-padding-top: 4rem;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+        background: #DBEAFE;
+        color: #1E293B;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-ring);
+        outline-offset: 2px;
+    }
+
+    input[type='search']::-webkit-search-cancel-button {
+        display: none;
+    }
+}
+
+@layer components {
+    .eyebrow {
+        @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+    }
+
+    /* Frosted surfaces */
+    .glass-card {
+        @apply rounded-2xl border border-white/80 bg-white/80 shadow-glass backdrop-blur-xl;
+    }
+
+    .glass-panel {
+        @apply rounded-2xl border border-white/20 bg-white/10 shadow-glass-lg backdrop-blur-xl;
+    }
+
+    .surface-card {
+        @apply glass-card p-5;
+    }
+
+    /* Forms */
+    .field-label {
+        @apply mb-2 block text-sm font-semibold text-foreground;
+    }
+
+    .field-input {
+        @apply block w-full rounded-xl border border-line bg-white/80 px-4 py-3 text-sm text-foreground shadow-sm backdrop-blur-sm transition-all duration-150 placeholder:text-muted-foreground hover:border-secondary focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground;
+    }
+
+    .field-input-error {
+        @apply border-destructive focus:border-destructive focus:ring-destructive/20;
+    }
+
+    /* Actions */
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-blue-glow transition-all duration-150 hover:bg-primary-dark active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-accent {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-black shadow-accent-glow transition-all duration-150 hover:bg-accent-dark active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-white/80 px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm backdrop-blur transition-all duration-150 hover:border-secondary hover:bg-white active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-quiet {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
