@@ -12,6 +12,7 @@ class PermissionSeeder extends Seeder
 
     /** @var array<string, list<string>> */
     public const GROUPS = [
+        'Workspace' => ['workspace.view', 'workspace.update'],
         'Roles' => ['roles.view', 'roles.create', 'roles.edit', 'roles.delete'],
         'Members' => ['users.view', 'users.create', 'users.edit', 'users.delete'],
         'Activity' => ['activity-logs.view'],

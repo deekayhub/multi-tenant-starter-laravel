@@ -28,6 +28,7 @@ class MemberController extends Controller
 
         return view('tenant.members.index', [
             'members' => $members,
+            'adminCount' => $this->adminCount(),
         ]);
     }
 
@@ -39,6 +40,7 @@ class MemberController extends Controller
         return view('tenant.members.create', [
             'roles' => $this->assignableRoles(),
             'assignedRoles' => [],
+            'isSoleAdmin' => false,
         ]);
     }
 
@@ -56,9 +58,9 @@ class MemberController extends Controller
             'tenant_id' => (string) tenant()->getTenantKey(),
         ]);
 
-        $member->syncRoles($validated['roles'] ?? []);
+        $member->syncRoles(array_map('intval', $validated['roles'] ?? []));
 
-        return redirect()->route('tenant.members.index')
+        return redirect()->route('settings.members.index')
             ->with('status', __('Member added.'));
     }
 
@@ -73,6 +75,7 @@ class MemberController extends Controller
             'member' => $member,
             'roles' => $this->assignableRoles(),
             'assignedRoles' => $member->roles->pluck('id')->all(),
+            'isSoleAdmin' => $member->hasRole(PermissionSeeder::ADMIN_ROLE) && $this->adminCount() <= 1,
         ]);
     }
 
@@ -82,7 +85,7 @@ class MemberController extends Controller
     public function update(UpdateMemberRequest $request, User $member): RedirectResponse
     {
         $validated = $request->validated();
-        $roleIds = $validated['roles'] ?? [];
+        $roleIds = array_map('intval', $validated['roles'] ?? []);
 
         $this->ensureLastAdminIsPreserved($member, $roleIds);
 
@@ -92,7 +95,7 @@ class MemberController extends Controller
         ]);
         $member->syncRoles($roleIds);
 
-        return redirect()->route('tenant.members.index')
+        return redirect()->route('settings.members.index')
             ->with('status', __('Member updated.'));
     }
 
@@ -109,7 +112,7 @@ class MemberController extends Controller
 
         $member->delete();
 
-        return redirect()->route('tenant.members.index')
+        return redirect()->route('settings.members.index')
             ->with('status', __('Member removed.'));
     }
 

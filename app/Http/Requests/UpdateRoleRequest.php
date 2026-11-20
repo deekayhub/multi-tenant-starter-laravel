@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Database\Seeders\PermissionSeeder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,7 +31,11 @@ class UpdateRoleRequest extends FormRequest
                     ->where('guard_name', $guard))->ignore($roleId),
             ],
             'permissions' => ['required', 'array', 'min:1'],
-            'permissions.*' => ['string', Rule::in(PermissionSeeder::names())],
+            'permissions.*' => [
+                'string',
+                Rule::exists('permissions', 'name')->where(fn (Builder $query): Builder => $query
+                    ->where('guard_name', $guard)),
+            ],
         ];
     }
 

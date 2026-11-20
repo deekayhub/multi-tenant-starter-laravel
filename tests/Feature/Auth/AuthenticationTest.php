@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -34,7 +35,8 @@ test('users can not authenticate with invalid password', function () {
 test('users can logout', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post('/logout');
+    $logoutUrl = URL::temporarySignedRoute('central.logout', now()->addMinutes(5));
+    $response = $this->actingAs($user)->post($logoutUrl);
 
     $this->assertGuest();
     $response->assertRedirect('/');

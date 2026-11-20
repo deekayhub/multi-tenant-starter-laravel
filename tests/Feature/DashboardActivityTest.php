@@ -18,7 +18,10 @@ it('shows recent authentication activity for the current group', function () {
         ->assertOk()
         ->assertSee('Signed in')
         ->assertSee('Alice Example')
-        ->assertDontSee('Bob Secret');
+        ->assertDontSee('Bob Secret')
+        ->assertDontSee('New tenant')
+        ->assertDontSee('Add tenant')
+        ->assertDontSee('Export report');
 });
 
 it('shows an empty state when the group has no activity', function () {

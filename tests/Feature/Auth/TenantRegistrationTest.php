@@ -14,39 +14,40 @@ function tenantRegistrationPayload(array $overrides = []): array
     ], $overrides);
 }
 
-it('creates both a subdomain and a custom domain and redirects to the custom domain', function () {
+it('creates a subdomain and redirects to it', function () {
+    $response = $this->post('/register', tenantRegistrationPayload());
+
+    $tenant = Tenant::query()->where('name', 'Globex Labs')->firstOrFail();
+
+    $response->assertRedirectContains('/login/');
+
+    expect(parse_url($response->headers->get('Location'), PHP_URL_HOST))->toBe('globex.saas.test');
+
+    $this->assertDatabaseHas('domains', ['domain' => 'globex', 'tenant_id' => $tenant->id]);
+    $this->assertDatabaseCount('domains', 1);
+});
+
+it('ignores a custom domain submitted during registration', function () {
     $response = $this->post('/register', tenantRegistrationPayload([
-        'domain' => 'https://globex.example.com/',
+        'domain' => 'globex.example.com',
     ]));
 
     $tenant = Tenant::query()->where('name', 'Globex Labs')->firstOrFail();
 
     $response->assertRedirectContains('/login/');
 
-    expect(parse_url($response->headers->get('Location'), PHP_URL_HOST))->toBe('globex.example.com');
+    expect(parse_url($response->headers->get('Location'), PHP_URL_HOST))->toBe('globex.saas.test');
 
     $this->assertDatabaseHas('domains', ['domain' => 'globex', 'tenant_id' => $tenant->id]);
-    $this->assertDatabaseHas('domains', ['domain' => 'globex.example.com', 'tenant_id' => $tenant->id]);
-});
-
-it('redirects to the custom domain when only a custom domain is provided', function () {
-    $response = $this->post('/register', tenantRegistrationPayload([
-        'subdomain' => null,
-        'domain' => 'globex.example.com',
-    ]));
-
-    $response->assertRedirectContains('/login/');
-
-    expect(parse_url($response->headers->get('Location'), PHP_URL_HOST))->toBe('globex.example.com');
-
+    $this->assertDatabaseMissing('domains', ['domain' => 'globex.example.com', 'tenant_id' => $tenant->id]);
     $this->assertDatabaseCount('domains', 1);
 });
 
-it('rejects a registration without a subdomain or custom domain', function () {
+it('rejects a registration without a subdomain', function () {
     $this->post('/register', tenantRegistrationPayload([
         'subdomain' => null,
     ]))->assertSessionHasErrors([
-        'subdomain' => 'Choose a subdomain or enter a custom domain.',
+        'subdomain' => 'Choose a subdomain.',
     ]);
 
     $this->assertDatabaseCount('tenants', 0);
@@ -63,16 +64,6 @@ it('rejects invalid subdomains', function (string $subdomain, string $message) {
     'underscore' => ['my_shop', 'Use lowercase letters, numbers and hyphens only.'],
     'leading hyphen' => ['-shop', 'Use lowercase letters, numbers and hyphens only.'],
 ]);
-
-it('rejects a custom domain below the central domain', function () {
-    $this->post('/register', tenantRegistrationPayload([
-        'domain' => 'globex.saas.test',
-    ]))->assertSessionHasErrors([
-        'domain' => 'Use the subdomain field for addresses under saas.test.',
-    ]);
-
-    $this->assertDatabaseCount('tenants', 0);
-});
 
 it('rejects a subdomain already used as a full domain', function () {
     $tenant = Tenant::create(['name' => 'Existing Tenant']);

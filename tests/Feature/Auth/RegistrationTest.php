@@ -5,7 +5,10 @@ use App\Models\Tenant;
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
-    $response->assertOk();
+    $response
+        ->assertOk()
+        ->assertSee('Subdomain')
+        ->assertDontSee('Custom domain');
 });
 
 test('new users can register a tenant with a subdomain', function () {

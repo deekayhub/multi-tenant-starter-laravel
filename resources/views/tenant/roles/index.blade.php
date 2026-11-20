@@ -1,19 +1,16 @@
-<x-app-layout :title="__('Roles')">
-    <div class="space-y-7">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    <x-icon name="cog" class="h-4 w-4" />
-                    {{ __('Access control') }}
-                </p>
-                <h1 class="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl">{{ __('Roles') }}</h1>
-                <p class="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-                    {{ __('Group permissions into roles, then assign those roles to your team members.') }}
-                </p>
+<x-settings-layout
+    :title="__('Roles & Permissions')"
+    :description="__('Group permissions into roles, then assign those roles to your team members.')"
+>
+    <div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                <x-icon name="cog" class="h-4 w-4" />
+                <span>{{ trans_choice(':count role|:count roles', $roles->total()) }}</span>
             </div>
 
             @can('roles.create')
-                <a href="{{ route('tenant.roles.create') }}" class="btn-primary self-start">
+                <a href="{{ route('settings.roles.create') }}" class="btn-primary">
                     <x-icon name="plus" class="h-4 w-4" />
                     {{ __('New role') }}
                 </a>
@@ -29,10 +26,10 @@
         <section class="glass-card overflow-hidden" aria-labelledby="roles-heading">
             <div class="flex flex-col gap-2 border-b border-line px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 id="roles-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Workspace roles') }}</h2>
+                    <h3 id="roles-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Workspace roles') }}</h3>
                     <p class="mt-1 text-xs text-muted-foreground">{{ __('The Admin role is protected for this workspace.') }}</p>
                 </div>
-                <span class="text-xs font-semibold text-muted-foreground">{{ trans_choice(':count role|:count roles', $roles->total()) }}</span>
+                <span class="text-xs font-semibold text-muted-foreground">{{ __('Showing page :page', ['page' => $roles->currentPage()]) }}</span>
             </div>
 
             @if ($roles->isEmpty())
@@ -49,9 +46,9 @@
                         <caption class="sr-only">{{ __('Workspace roles') }}</caption>
                         <thead>
                             <tr class="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                                <th scope="col" class="px-5 py-2.5 font-bold">{{ __('Role') }}</th>
-                                <th scope="col" class="px-5 py-2.5 font-bold">{{ __('Permissions') }}</th>
-                                <th scope="col" class="px-5 py-2.5 text-right font-bold">{{ __('Actions') }}</th>
+                                <th scope="col" class="px-5 py-3 font-bold">{{ __('Role') }}</th>
+                                <th scope="col" class="px-5 py-3 font-bold">{{ __('Permissions') }}</th>
+                                <th scope="col" class="px-5 py-3 text-right font-bold">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-line">
@@ -63,10 +60,10 @@
                                 <tr class="transition-colors hover:bg-muted/40">
                                     <td class="px-5 py-3">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <span class="text-xs font-bold text-foreground">{{ $role->name }}</span>
+                                            <span class="text-sm font-bold text-foreground">{{ $role->name }}</span>
                                             @if ($isAdmin)
                                                 <span class="rounded-md border border-warning/25 bg-warning/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-caution">
-                                                    {{ __('Protected') }}
+                                                    {{ __('Protected system role') }}
                                                 </span>
                                             @endif
                                         </div>
@@ -86,22 +83,26 @@
                                     </td>
                                     <td class="px-5 py-3">
                                         <div class="flex flex-wrap items-center justify-end gap-2">
-                                            @unless ($isAdmin)
-                                                @can('roles.edit')
-                                                    <a href="{{ route('tenant.roles.edit', $role) }}" class="btn-quiet">{{ __('Edit') }}</a>
-                                                @endcan
-                                                @can('roles.delete')
-                                                    <form method="POST" action="{{ route('tenant.roles.destroy', $role) }}">
+                                            @can('roles.edit')
+                                                @if ($isAdmin)
+                                                    <button type="button" class="btn-quiet cursor-not-allowed opacity-50" disabled title="{{ __('The Admin role cannot be renamed.') }}">{{ __('Edit') }}</button>
+                                                @else
+                                                    <a href="{{ route('settings.roles.edit', $role) }}" class="btn-quiet">{{ __('Edit') }}</a>
+                                                @endif
+                                            @endcan
+                                            @can('roles.delete')
+                                                @if ($isAdmin)
+                                                    <button type="button" class="btn-quiet cursor-not-allowed opacity-50" disabled title="{{ __('The Admin role cannot be deleted.') }}">{{ __('Delete') }}</button>
+                                                @else
+                                                    <form method="POST" action="{{ route('settings.roles.destroy', $role) }}">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn-quiet text-destructive hover:text-destructive">
                                                             {{ __('Delete') }}
                                                         </button>
                                                     </form>
-                                                @endcan
-                                            @else
-                                                <span class="text-xs font-medium text-muted-foreground">{{ __('Managed by the system') }}</span>
-                                            @endunless
+                                                @endif
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -116,4 +117,4 @@
             @endif
         </section>
     </div>
-</x-app-layout>
+</x-settings-layout>

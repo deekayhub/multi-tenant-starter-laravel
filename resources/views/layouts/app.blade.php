@@ -10,6 +10,23 @@
         ->take(2)
         ->map(fn (string $part): string => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($part, 0, 1)))
         ->implode('');
+
+    $settingsRoute = route('profile.edit');
+    $workspaceName = tenant()?->name ?? config('app.name', 'Orbit');
+    $logoutUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+        tenant() ? 'logout' : 'central.logout',
+        now()->addDay(),
+    );
+
+    if (tenant()) {
+        if (auth()->user()?->can('workspace.view')) {
+            $settingsRoute = route('settings.workspace.edit');
+        } elseif (auth()->user()?->can('users.view')) {
+            $settingsRoute = route('settings.members.index');
+        } elseif (auth()->user()?->can('roles.view')) {
+            $settingsRoute = route('settings.roles.index');
+        }
+    }
 @endphp
 
 <!DOCTYPE html>
@@ -103,35 +120,12 @@
                         </button>
 
                         <div class="flex min-w-0 items-center gap-2 text-xs font-semibold">
-                            <span class="hidden truncate text-muted-foreground sm:inline">{{ __('Acme Workspace') }}</span>
+                            <span class="hidden truncate text-muted-foreground sm:inline">{{ $workspaceName }}</span>
                             <span class="hidden text-line sm:inline" aria-hidden="true">/</span>
                             <span class="truncate text-foreground">{{ $section }}</span>
                         </div>
 
                         <div class="ml-auto flex items-center gap-1.5 sm:gap-2">
-                            <div class="relative hidden lg:block">
-                                <label for="global-search" class="sr-only">{{ __('Search workspace') }}</label>
-                                <span class="pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-muted-foreground">
-                                    <x-icon name="search" class="h-4 w-4" />
-                                </span>
-                                <input
-                                    id="global-search"
-                                    type="search"
-                                    placeholder="{{ __('Search anything…') }}"
-                                    class="h-10 w-52 rounded-xl border border-line bg-white/80 pl-10 pr-3 text-xs text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/15 xl:w-64"
-                                >
-                            </div>
-
-                            <button type="button" class="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/80 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="{{ __('Notifications') }}">
-                                <x-icon name="bell" class="h-5 w-5" />
-                                <span class="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-accent ring-2 ring-white" aria-hidden="true"></span>
-                            </button>
-
-                            <a href="#" class="hidden h-10 items-center gap-2 rounded-xl bg-accent px-3.5 text-sm font-bold text-black shadow-accent-glow transition-all duration-150 hover:bg-accent-dark active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:inline-flex">
-                                <x-icon name="plus" class="h-4 w-4" />
-                                {{ __('New tenant') }}
-                            </a>
-
                             <x-dropdown align="right" width="56">
                                 <x-slot name="trigger">
                                     <button type="button" :aria-expanded="open" class="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:pr-2">
@@ -148,14 +142,13 @@
                                         <p class="truncate text-[11px] font-medium text-muted-foreground">{{ auth()->user()->email }}</p>
                                     </div>
 
-                                    <x-dropdown-link :href="route('profile.edit')">{{ __('Profile & settings') }}</x-dropdown-link>
-                                    <x-dropdown-link href="#">{{ __('Billing') }}</x-dropdown-link>
+                                    <x-dropdown-link :href="$settingsRoute">{{ __('Settings') }}</x-dropdown-link>
 
                                     <div class="my-1 border-t border-line"></div>
 
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ $logoutUrl }}">
                                         @csrf
-                                        <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <x-dropdown-link :href="$logoutUrl" onclick="event.preventDefault(); this.closest('form').submit();">
                                             {{ __('Log out') }}
                                         </x-dropdown-link>
                                     </form>
@@ -177,5 +170,7 @@
                 </main>
             </div>
         </div>
+
+        @stack('scripts')
     </body>
 </html>

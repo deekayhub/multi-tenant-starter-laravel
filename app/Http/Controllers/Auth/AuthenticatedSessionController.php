@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -47,12 +48,45 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+        $tenant = tenant();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
+        if ($tenant !== null) {
+            $parameters = ['tenant' => $tenant->getTenantKey()];
+
+            if ($user !== null) {
+                $parameters['user'] = $user->getKey();
+            }
+
+            return redirect()->away(URL::temporarySignedRoute(
+                'central.logout.handoff',
+                now()->addMinutes(5),
+                $parameters,
+            ));
+        }
+
         return redirect('/');
+    }
+
+    /**
+     * Clear the central session after a tenant logout.
+     */
+    public function handoff(Request $request): RedirectResponse
+    {
+        if (Auth::check()) {
+            Auth::guard('web')->logout();
+        }
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

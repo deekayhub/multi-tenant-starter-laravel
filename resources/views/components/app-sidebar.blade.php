@@ -7,8 +7,6 @@
 
     $workspaceItems = [
         ['label' => __('Overview'), 'icon' => 'grid', 'href' => $dashboardRoute, 'active' => request()->routeIs('dashboard', 'tenant.dashboard')],
-        ['label' => __('Projects'), 'icon' => 'box', 'href' => '#', 'active' => false, 'badge' => '4'],
-        ['label' => __('Tasks'), 'icon' => 'clipboard', 'href' => '#', 'active' => false, 'badge' => '12'],
     ];
 
     if (! $isTenant || $user?->can('activity-logs.view')) {
@@ -20,57 +18,52 @@
         ];
     }
 
+    $settingsItems = [
+        ['label' => __('Profile'), 'icon' => 'user', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.*')],
+    ];
+
+    if ($isTenant && $user?->can('workspace.view')) {
+        $settingsItems[] = [
+            'label' => __('Workspace'),
+            'icon' => 'storefront',
+            'href' => route('settings.workspace.edit'),
+            'active' => request()->routeIs('settings.workspace.*'),
+        ];
+    }
+
+    if ($isTenant && $user?->can('users.view')) {
+        $settingsItems[] = [
+            'label' => __('Team Members'),
+            'icon' => 'users',
+            'href' => route('settings.members.index'),
+            'active' => request()->routeIs('settings.members.*'),
+        ];
+    }
+
+    if ($isTenant && $user?->can('roles.view')) {
+        $settingsItems[] = [
+            'label' => __('Roles & Permissions'),
+            'icon' => 'cog',
+            'href' => route('settings.roles.index'),
+            'active' => request()->routeIs('settings.roles.*'),
+        ];
+    }
+
     $groups = [
         [
             'label' => __('Workspace'),
             'items' => $workspaceItems,
         ],
-    ];
-
-    if ($isTenant) {
-        $accessItems = [];
-
-        if ($user?->can('roles.view')) {
-            $accessItems[] = [
-                'label' => __('Roles'),
-                'icon' => 'cog',
-                'href' => route('tenant.roles.index'),
-                'active' => request()->routeIs('tenant.roles.*'),
-            ];
-        }
-
-        if ($user?->can('users.view')) {
-            $accessItems[] = [
-                'label' => __('Team Members'),
-                'icon' => 'users',
-                'href' => route('tenant.members.index'),
-                'active' => request()->routeIs('tenant.members.*'),
-            ];
-        }
-
-        if ($accessItems !== []) {
-            $groups[] = [
-                'label' => __('Access'),
-                'items' => $accessItems,
-            ];
-        }
-    } else {
-        $groups[] = [
-            'label' => __('Tenancy'),
+        [
+            'label' => __('Account'),
             'items' => [
-                ['label' => __('Tenants'), 'icon' => 'storefront', 'href' => '#', 'active' => false, 'badge' => '3'],
-                ['label' => __('Members'), 'icon' => 'users', 'href' => '#', 'active' => false],
-                ['label' => __('Billing'), 'icon' => 'wallet', 'href' => '#', 'active' => false],
-                ['label' => __('Integrations'), 'icon' => 'plug', 'href' => '#', 'active' => false],
+                [
+                    'label' => __('Settings'),
+                    'icon' => 'cog',
+                    'active' => request()->routeIs('settings.*', 'profile.*'),
+                    'children' => $settingsItems,
+                ],
             ],
-        ];
-    }
-
-    $groups[] = [
-        'label' => __('Account'),
-        'items' => [
-            ['label' => __('Settings'), 'icon' => 'cog', 'href' => '#', 'active' => false],
-            ['label' => __('Profile'), 'icon' => 'user', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.*')],
         ],
     ];
 @endphp
@@ -84,15 +77,9 @@
         class="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/10 px-4"
         @if ($collapsible) x-bind:class="sidebarCollapsed ? 'justify-center px-0' : ''" @endif
     >
-        <a href="{{ $dashboardRoute }}" class="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="{{ __('Starter kit dashboard') }}">
+        <a href="{{ $dashboardRoute }}" class="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="{{ __('Orbit dashboard') }}">
             <x-brand-mark class="h-9 w-9" />
-            @if ($collapsible)
-                <span class="text-lg font-extrabold tracking-tight" x-show="! sidebarCollapsed">orbit</span>
-                <span class="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white/80" x-show="! sidebarCollapsed">Kit</span>
-            @else
-                <span class="text-lg font-extrabold tracking-tight">orbit</span>
-                <span class="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white/80">Kit</span>
-            @endif
+            <span class="text-lg font-extrabold tracking-tight" @if ($collapsible) x-show="! sidebarCollapsed" @endif>orbit</span>
         </a>
 
         @if ($closable)
@@ -122,42 +109,105 @@
                     >{{ $group['label'] }}</p>
                     <ul class="mt-3 space-y-1">
                         @foreach ($group['items'] as $item)
-                            <li>
-                                <a
-                                    href="{{ $item['href'] }}"
-                                    @if ($item['active']) aria-current="page" @endif
+                            @if (isset($item['children']))
+                                @php
+                                    $submenuId = $collapsible ? 'settings-submenu-rail' : 'settings-submenu-panel';
+                                @endphp
+                                <li
+                                    x-data="{ settingsOpen: @json($item['active']) }"
                                     @if ($collapsible)
-                                        data-label="{{ $item['label'] }}"
-                                        x-bind:class="sidebarCollapsed ? 'justify-center px-0' : ''"
-                                        x-bind:title="sidebarCollapsed ? $el.dataset.label : null"
-                                        x-bind:aria-label="sidebarCollapsed ? $el.dataset.label : null"
+                                        @keydown.escape.window="settingsOpen = false"
                                     @endif
-                                    @class([
-                                        'group flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                                        'border-primary bg-primary/25 text-white shadow-sm' => $item['active'],
-                                        'border-transparent text-white/80 hover:border-white/30 hover:bg-white/10 hover:text-white' => ! $item['active'],
-                                    ])
                                 >
-                                    <x-icon :name="$item['icon']" class="h-[18px] w-[18px] shrink-0 {{ $item['active'] ? 'text-white' : 'text-white/75 group-hover:text-white' }}" />
-                                    <span class="flex-1 truncate" @if ($collapsible) x-show="! sidebarCollapsed" @endif>{{ $item['label'] }}</span>
-                                    @isset($item['badge'])
-                                        <span class="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/85" @if ($collapsible) x-show="! sidebarCollapsed" @endif>{{ $item['badge'] }}</span>
-                                    @endisset
-                                </a>
-                            </li>
+                                    <button
+                                        type="button"
+                                        @click="settingsOpen = ! settingsOpen"
+                                        :aria-expanded="settingsOpen ? 'true' : 'false'"
+                                        aria-controls="{{ $submenuId }}"
+                                        @if ($collapsible)
+                                            data-label="{{ $item['label'] }}"
+                                            x-bind:class="sidebarCollapsed ? 'justify-center px-0' : ''"
+                                            x-bind:title="sidebarCollapsed ? $el.dataset.label : null"
+                                            x-bind:aria-label="sidebarCollapsed ? $el.dataset.label : null"
+                                        @endif
+                                        @class([
+                                            'group flex w-full items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                            'border-primary bg-primary/25 text-white shadow-sm' => $item['active'],
+                                            'border-transparent text-white/80 hover:border-white/30 hover:bg-white/10 hover:text-white' => ! $item['active'],
+                                        ])
+                                    >
+                                        <x-icon :name="$item['icon']" class="h-[18px] w-[18px] shrink-0 {{ $item['active'] ? 'text-white' : 'text-white/75 group-hover:text-white' }}" />
+                                        <span class="flex-1 truncate text-left" @if ($collapsible) x-show="! sidebarCollapsed" @endif>{{ $item['label'] }}</span>
+                                        <x-icon
+                                            name="chevron-down"
+                                            class="h-3.5 w-3.5 shrink-0 text-white/70 transition-transform duration-150"
+                                            @if ($collapsible)
+                                                x-show="! sidebarCollapsed"
+                                                x-bind:class="settingsOpen ? 'rotate-180' : ''"
+                                            @else
+                                                x-bind:class="settingsOpen ? 'rotate-180' : ''"
+                                            @endif
+                                            x-cloak
+                                        />
+                                    </button>
+
+                                    <ul
+                                        id="{{ $submenuId }}"
+                                        class="mt-1 space-y-0.5 border-l border-white/15 pl-4"
+                                        x-show="settingsOpen"
+                                        x-cloak
+                                        x-transition:enter="transition ease-out duration-150"
+                                        x-transition:enter-start="opacity-0 -translate-y-1"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        @if ($collapsible) x-bind:class="sidebarCollapsed ? 'hidden' : ''" @endif
+                                    >
+                                        @foreach ($item['children'] as $child)
+                                            <li>
+                                                <a
+                                                    href="{{ $child['href'] }}"
+                                                    @if ($child['active']) aria-current="page" @endif
+                                                    @class([
+                                                        'flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                                        'bg-white/15 text-white' => $child['active'],
+                                                        'text-white/70 hover:bg-white/10 hover:text-white' => ! $child['active'],
+                                                    ])
+                                                >
+                                                    <x-icon :name="$child['icon']" class="h-3.5 w-3.5 shrink-0" />
+                                                    <span class="truncate">{{ $child['label'] }}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li>
+                                    <a
+                                        href="{{ $item['href'] }}"
+                                        @if ($item['active']) aria-current="page" @endif
+                                        @if ($collapsible)
+                                            data-label="{{ $item['label'] }}"
+                                            x-bind:class="sidebarCollapsed ? 'justify-center px-0' : ''"
+                                            x-bind:title="sidebarCollapsed ? $el.dataset.label : null"
+                                            x-bind:aria-label="sidebarCollapsed ? $el.dataset.label : null"
+                                        @endif
+                                        @class([
+                                            'group flex items-center gap-3 rounded-lg border-l-2 px-3 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                            'border-primary bg-primary/25 text-white shadow-sm' => $item['active'],
+                                            'border-transparent text-white/80 hover:border-white/30 hover:bg-white/10 hover:text-white' => ! $item['active'],
+                                        ])
+                                    >
+                                        <x-icon :name="$item['icon']" class="h-[18px] w-[18px] shrink-0 {{ $item['active'] ? 'text-white' : 'text-white/75 group-hover:text-white' }}" />
+                                        <span class="flex-1 truncate" @if ($collapsible) x-show="! sidebarCollapsed" @endif>{{ $item['label'] }}</span>
+                                        @isset($item['badge'])
+                                            <span class="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/85" @if ($collapsible) x-show="! sidebarCollapsed" @endif>{{ $item['badge'] }}</span>
+                                        @endisset
+                                    </a>
+                                </li>
+                            @endif
                         @endforeach
                     </ul>
                 </div>
             @endforeach
-
-            <div class="rounded-xl border border-white/20 bg-white/10 p-4 backdrop-blur-md" @if ($collapsible) x-show="! sidebarCollapsed" @endif>
-                <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-white/80">{{ __('Starter note') }}</p>
-                <p class="mt-2 text-xs leading-5 text-white/85">{{ __('Swap these screens and placeholders for your own product.') }}</p>
-                <a href="#" class="mt-3 inline-flex items-center gap-1.5 rounded text-xs font-bold text-white transition-colors hover:text-[#BFDBFE] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                    {{ __('View checklist') }}
-                    <span aria-hidden="true">&rarr;</span>
-                </a>
-            </div>
         </div>
     </nav>
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 it('logs a login event when a user signs in', function () {
     $user = User::factory()->create();
@@ -22,7 +23,9 @@ it('logs a login event when a user signs in', function () {
 it('logs a logout event when a user signs out', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->post(route('logout'))->assertRedirect('/');
+    $logoutUrl = URL::temporarySignedRoute('central.logout', now()->addMinutes(5));
+
+    $this->actingAs($user)->post($logoutUrl)->assertRedirect('/');
 
     $this->assertDatabaseHas('activity_log', [
         'log_name' => 'authentication',

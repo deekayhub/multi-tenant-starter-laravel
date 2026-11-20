@@ -1,4 +1,11 @@
 <x-guest-layout :title="__('Verify email')">
+    @php
+        $logoutUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'central.logout',
+            now()->addDay(),
+        );
+    @endphp
+
     <div class="border-b border-line pb-7">
         <p class="eyebrow">{{ __('One last step') }}</p>
         <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{{ __('Check your inbox.') }}</h1>
@@ -11,13 +18,13 @@
         <x-auth-session-status class="mt-7" :status="__('A new verification link has been sent to your email address.')" />
     @endif
 
-    <form method="POST" action="{{ route('verification.send') }}" class="mt-7">
+    <form method="POST" action="{{ route('verification.send') }}" class="mt-6 flex justify-end">
         @csrf
-        <button type="submit" class="btn-primary w-full">{{ __('Resend verification email') }}</button>
+        <button type="submit" class="btn-primary">{{ __('Resend verification email') }}</button>
     </form>
 
-    <form method="POST" action="{{ route('logout') }}" class="mt-3">
+    <form method="POST" action="{{ $logoutUrl }}" class="mt-2 flex justify-end">
         @csrf
-        <button type="submit" class="btn-quiet w-full">{{ __('Log out') }}</button>
+        <button type="submit" class="btn-quiet">{{ __('Log out') }}</button>
     </form>
 </x-guest-layout>

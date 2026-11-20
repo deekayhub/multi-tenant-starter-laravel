@@ -9,12 +9,12 @@
 
     <x-auth-session-status class="mt-7" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}" class="mt-7 space-y-6">
+    <form method="POST" action="{{ route('login') }}" class="form-grid mt-6">
         @csrf
 
         <x-form-error-summary :errors="$errors" />
 
-        <div>
+        <div class="form-field">
             <label for="email" class="field-label">{{ __('Email address') }}</label>
             <div class="relative">
                 <span class="pointer-events-none absolute inset-y-0 left-0 flex w-12 items-center justify-center text-muted-foreground" aria-hidden="true">
@@ -43,7 +43,7 @@
             @enderror
         </div>
 
-        <div x-data="{ visible: false }">
+        <div class="form-field" x-data="{ visible: false }">
             <div class="mb-2 flex items-baseline justify-between gap-4">
                 <label for="password" class="field-label mb-0">{{ __('Password') }}</label>
                 @if (Route::has('password.request'))
@@ -77,7 +77,7 @@
                     @click="visible = !visible"
                     :aria-label="visible ? '{{ __('Hide password') }}' : '{{ __('Show password') }}'"
                     :aria-pressed="visible"
-                    class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                     <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" x-show="! visible">
                         <path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z" />
@@ -93,7 +93,7 @@
             @enderror
         </div>
 
-        <label for="remember_me" class="group inline-flex cursor-pointer items-center gap-3">
+        <label for="remember_me" class="form-field-full group inline-flex cursor-pointer items-center gap-3">
             <input
                 id="remember_me"
                 name="remember"
@@ -103,10 +103,12 @@
             <span class="text-sm font-medium text-muted-foreground group-hover:text-foreground">{{ __('Keep me signed in') }}</span>
         </label>
 
-        <button type="submit" class="btn-primary w-full">
-            {{ __('Sign in') }}
-            <span aria-hidden="true">&rarr;</span>
-        </button>
+        <div class="form-field-full flex justify-end border-t border-line pt-4">
+            <button type="submit" class="btn-primary">
+                {{ __('Sign in') }}
+                <span aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
     </form>
 
     <p class="mt-8 border-t border-line pt-6 text-sm text-muted-foreground">

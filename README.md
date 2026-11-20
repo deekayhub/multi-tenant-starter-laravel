@@ -1,58 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Orbit — multi-tenancy starter kit
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Orbit is a Laravel starter kit for building tenant-aware SaaS applications. It provides the shared plumbing — authentication, subdomain tenancy, workspaces, roles and permissions, settings, and an activity log — while keeping the product screens intentionally generic.
 
-## About Laravel
+This is **not** a CRM, billing system, project manager, or finished dashboard. The workspace names, metrics, and preview copy are placeholders meant to be replaced.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## What is included
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Single-database tenancy** with `stancl/tenancy`. Tenants are identified by subdomain or custom domain; tenant-owned rows are scoped with `tenant_id`.
+- **Authentication** based on Laravel Breeze: registration, login, password reset, password confirmation, and email verification.
+- **Tenant onboarding**: registration creates the workspace, its subdomain, and an owner with the protected `Admin` role.
+- **Permission-aware settings**: Profile, Workspace, Team Members, and Roles & Permissions under one collapsible navigation.
+- **Spatie Permission teams**: roles and permissions are scoped by tenant, with a dynamic permission matrix and `Select All` controls.
+- **Protected Admin safeguards**: the Admin role cannot be renamed, edited, or deleted; the last Admin cannot be removed.
+- **Activity log**: sign-ins and sign-outs are recorded with `spatie/laravel-activitylog` and shown in a filterable table.
+- **Placeholder UI**: compact forms, real navigation, and no fake KPI cards or unrelated product content.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech stack
 
-## Learning Laravel
+| Package | Version | Purpose |
+| --- | --- | --- |
+| PHP | 8.3+ (verified on 8.4) | Runtime |
+| Laravel | 13.x | Application framework, Eloquent, routing, validation, queues |
+| `stancl/tenancy` | 3.x | Domain/subdomain tenant identification and tenant scoping |
+| `spatie/laravel-permission` | 8.x | Tenant-scoped roles and permissions |
+| `spatie/laravel-activitylog` | 5.x | Authentication activity log |
+| `laravel/breeze` | 2.x | Blade authentication scaffolding |
+| Tailwind CSS | 3.x | Utility-first styling and shared component classes |
+| Alpine.js | 3.x | Menus, modals, and collapsible navigation |
+| Vite | 8.x | Frontend asset build |
+| Pest | 5.x | Feature and unit tests |
+| Laravel Pint / Boost | 1.x / 2.x | Formatting and AI-assisted development tooling |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Exact installed versions are pinned in `composer.json`, `composer.lock`, and `package.json`.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick start
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Configure your database in `.env`, then set `APP_URL` to the **central** domain. For local development with `saas.test`:
 
-## Contributing
+```dotenv
+APP_URL=http://saas.test
+DB_CONNECTION=mysql
+DB_DATABASE=orbit
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The central domain list is derived from `APP_URL` plus `localhost` and `127.0.0.1` in `config/tenancy.php`. Add a wildcard host entry for subdomains on your machine, for example `*.saas.test` pointing to `127.0.0.1`.
 
-## Code of Conduct
+Then install and run:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate
+npm install
+npm run build
+php artisan serve
+```
 
-## Security Vulnerabilities
+Visit `http://saas.test/register`, create a workspace, and you will be redirected to the tenant subdomain.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## How tenancy works
 
-## License
+- Registration requires a **subdomain**; a custom domain is not requested at signup.
+- `domains` stores the short subdomain label (for example `acme`) and any custom hostnames.
+- `Tenant::preferredHost()` returns the custom domain first, then the full subdomain.
+- Tenant routes live in `routes/tenant.php`; central routes live in `routes/web.php` and `routes/auth.php`.
+- Profile URLs are canonical tenant routes, so `route('profile.edit')` resolves to the active tenant domain.
+- Logout posts to the tenant domain using a signed URL, then redirects through a central handoff so both tenant and central sessions are cleared.
+- Cache, filesystem, and queue services are made tenant-aware by the package bootstrappers. Database connections are not switched: this is a single-database application.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Settings and permissions
+
+Permission groups are seeded by `PermissionSeeder`:
+
+- **Workspace**: `workspace.view`, `workspace.update`
+- **Roles**: `roles.view`, `roles.create`, `roles.edit`, `roles.delete`
+- **Members**: `users.view`, `users.create`, `users.edit`, `users.delete`
+- **Activity**: `activity-logs.view`
+
+The settings navigation only shows links the current user can access. The `Admin` role receives every seeded permission and is protected from destructive changes.
+
+## Custom domains
+
+Open **Settings → Workspace** on the tenant domain to edit the workspace name, workspace email, and custom domain. Leave the custom domain field blank to remove it. The subdomain is read-only there.
+
+Point the custom hostname to the application and add it to the tenant's `domains` records through that form. Custom domains take priority when resolving where a user lands after authentication.
+
+## Development commands
+
+```bash
+php artisan test --compact   # run the test suite
+vendor/bin/pint --dirty --format agent  # format changed PHP files
+npm run build                # build CSS and JavaScript
+```
+
+## Placeholder note
+
+The dashboard, landing page, and sidebar are starter screens. Their labels and values demonstrate where product content belongs; they are not backed by domain-specific data. Replace them with your own views and keep only the infrastructure your product needs.

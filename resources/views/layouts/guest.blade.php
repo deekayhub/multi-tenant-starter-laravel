@@ -25,10 +25,9 @@
             <!-- Form column -->
             <div class="flex min-h-screen flex-col">
                 <header class="flex h-20 shrink-0 items-center justify-between gap-4 px-6 sm:px-10">
-                    <a href="{{ url('/') }}" class="inline-flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" aria-label="{{ __('Starter kit home') }}">
+                    <a href="{{ url('/') }}" class="inline-flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" aria-label="{{ __('Orbit home') }}">
                         <x-brand-mark class="h-9 w-9" />
                         <span class="text-lg font-extrabold tracking-tight">orbit</span>
-                        <span class="hidden border-l border-line pl-3 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:inline">Starter kit</span>
                     </a>
 
                     <a href="{{ url('/') }}" class="group inline-flex items-center gap-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
@@ -38,7 +37,7 @@
                 </header>
 
                 <main class="flex flex-1 items-center justify-center px-4 py-8 sm:px-10">
-                    <div class="w-full max-w-[30rem]">
+                    <div class="w-full max-w-[34rem]">
                         <div class="glass-card p-6 sm:p-9">
                             {{ $slot }}
                         </div>

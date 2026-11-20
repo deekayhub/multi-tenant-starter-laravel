@@ -9,21 +9,23 @@
 
     <x-auth-session-status class="mt-7" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}" class="mt-7 space-y-6">
+    <form method="POST" action="{{ route('password.email') }}" class="form-grid mt-6">
         @csrf
 
         <x-form-error-summary :errors="$errors" />
 
-        <div>
+        <div class="form-field">
             <x-input-label for="email" :value="__('Email address')" />
             <x-text-input id="email" type="email" name="email" :value="old('email')" placeholder="you@example.com" required autofocus />
             <x-input-error :messages="$errors->get('email')" name="email" />
         </div>
 
-        <button type="submit" class="btn-primary w-full">
-            {{ __('Email reset link') }}
-            <span aria-hidden="true">&rarr;</span>
-        </button>
+        <div class="form-field-full flex justify-end border-t border-line pt-4">
+            <button type="submit" class="btn-primary">
+                {{ __('Email reset link') }}
+                <span aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
     </form>
 
     <p class="mt-8 border-t border-line pt-6 text-sm text-muted-foreground">

@@ -8,19 +8,19 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-5">
+    <form method="post" action="{{ route('profile.update') }}" class="form-grid mt-5">
         @csrf
         @method('patch')
 
         <x-form-error-summary :errors="$errors" />
 
-        <div>
+        <div class="form-field">
             <x-input-label for="name" :value="__('Full name')" />
             <x-text-input id="name" name="name" type="text" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" name="name" />
         </div>
 
-        <div>
+        <div class="form-field">
             <x-input-label for="email" :value="__('Email address')" />
             <x-text-input id="email" name="email" type="email" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" name="email" />
@@ -39,7 +39,7 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4 border-t border-line pt-5">
+        <div class="form-field-full flex items-center gap-4 border-t border-line pt-4">
             <x-primary-button>{{ __('Save changes') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')

@@ -8,6 +8,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class RoleController extends Controller
@@ -47,7 +48,7 @@ class RoleController extends Controller
 
         $this->logPermissionChanges($role, [], collect($validated['permissions'])->sort()->values()->all(), 'permissions_attached');
 
-        return redirect()->route('tenant.roles.index')
+        return redirect()->route('settings.roles.index')
             ->with('status', __('Role created.'));
     }
 
@@ -83,7 +84,7 @@ class RoleController extends Controller
 
         $this->logPermissionChanges($role, $previousPermissions, collect($validated['permissions'])->sort()->values()->all(), 'permissions_updated');
 
-        return redirect()->route('tenant.roles.index')
+        return redirect()->route('settings.roles.index')
             ->with('status', __('Role updated.'));
     }
 
@@ -96,7 +97,7 @@ class RoleController extends Controller
 
         $role->delete();
 
-        return redirect()->route('tenant.roles.index')
+        return redirect()->route('settings.roles.index')
             ->with('status', __('Role deleted.'));
     }
 
@@ -129,19 +130,14 @@ class RoleController extends Controller
     /** @return array<string, mixed> */
     private function permissionFormData(): array
     {
-        $permissions = Permission::query()
-            ->whereIn('name', PermissionSeeder::names())
+        $groups = Permission::query()
+            ->orderBy('name')
             ->get()
-            ->keyBy('name');
-
-        $groups = collect(PermissionSeeder::GROUPS)
-            ->map(fn (array $names, string $label): array => [
-                'label' => $label,
-                'permissions' => collect($names)
-                    ->map(fn (string $name) => $permissions->get($name))
-                    ->filter()
-                    ->values()
-                    ->all(),
+            ->groupBy(fn (Permission $permission): string => Str::before($permission->name, '.'))
+            ->map(fn ($permissions, string $prefix): array => [
+                'key' => $prefix,
+                'label' => Str::headline($prefix),
+                'permissions' => $permissions->values()->all(),
             ])
             ->all();
 

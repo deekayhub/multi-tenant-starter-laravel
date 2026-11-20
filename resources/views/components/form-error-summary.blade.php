@@ -5,7 +5,7 @@
         role="alert"
         tabindex="-1"
         x-init="$el.focus()"
-        class="rounded-xl border border-destructive/25 bg-destructive/10 p-4 shadow-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2"
+        {{ $attributes->merge(['class' => 'rounded-xl border border-destructive/25 bg-destructive/10 p-4 shadow-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2']) }}
     >
         <p class="text-sm font-bold text-[#991B1B]">{{ __('There is a problem') }}</p>
         <ul class="mt-2 space-y-1.5 text-sm leading-6 text-[#7F1D1D]">

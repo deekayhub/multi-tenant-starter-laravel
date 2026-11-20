@@ -5,17 +5,19 @@
         <p class="mt-3 text-sm leading-6 text-muted-foreground">{{ __('Please confirm your password before continuing.') }}</p>
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}" class="mt-7 space-y-6">
+    <form method="POST" action="{{ route('password.confirm') }}" class="form-grid mt-6">
         @csrf
 
         <x-form-error-summary :errors="$errors" />
 
-        <div>
+        <div class="form-field">
             <x-input-label for="password" :value="__('Password')" />
             <x-text-input id="password" type="password" name="password" required autocomplete="current-password" />
             <x-input-error :messages="$errors->get('password')" name="password" />
         </div>
 
-        <button type="submit" class="btn-primary w-full">{{ __('Confirm password') }}</button>
+        <div class="form-field-full flex justify-end border-t border-line pt-4">
+            <button type="submit" class="btn-primary">{{ __('Confirm password') }}</button>
+        </div>
     </form>
 </x-guest-layout>

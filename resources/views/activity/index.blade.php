@@ -1,4 +1,4 @@
-<x-app-layout :title="__('Group activity')">
+<x-app-layout :title="__('Activity')">
     @php
         $activityRoute = tenant() ? route('tenant.activity.index') : route('activity.index');
 
@@ -9,48 +9,20 @@
         ];
     @endphp
 
-    <div class="space-y-7">
+    <div class="space-y-4">
         <!-- Page heading -->
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    <x-icon name="clock" class="h-4 w-4" />
-                    {{ __('Security log') }}
-                </p>
-                <h1 class="mt-3 text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl">{{ __('Group activity') }}</h1>
-                <p class="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-                    {{ __('Sign-ins and sign-outs across your workspace, newest first.') }}
-                </p>
-            </div>
-
-            <a href="{{ $activityRoute }}" class="btn-secondary self-start">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h1 class="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">{{ __('Activity') }}</h1>
+            <a href="{{ $activityRoute }}" class="btn-secondary">
                 <x-icon name="sync" class="h-4 w-4" />
                 {{ __('Refresh') }}
             </a>
         </div>
 
-        <!-- Summary -->
-        <div class="grid gap-4 sm:grid-cols-3">
-            @foreach ($filters as $filter)
-                <div class="surface-card transition-transform duration-150 hover:-translate-y-0.5">
-                    <div class="flex items-start justify-between gap-3">
-                        <p class="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">{{ $filter['label'] }}</p>
-                        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                            <x-icon :name="$filter['key'] === 'logout' ? 'logout' : ($filter['key'] === 'login' ? 'check' : 'chart')" class="h-5 w-5" />
-                        </span>
-                    </div>
-                    <p class="mt-4 text-3xl font-extrabold tracking-tight text-foreground">{{ $filter['count'] }}</p>
-                </div>
-            @endforeach
-        </div>
-
         <!-- Activity table -->
         <section class="glass-card overflow-hidden" aria-labelledby="activity-log-heading">
-            <div class="flex flex-col gap-4 p-5 pb-4 xl:flex-row xl:items-center xl:justify-between">
-                <div>
-                    <h2 id="activity-log-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Activity log') }}</h2>
-                    <p class="mt-1 text-xs text-muted-foreground">{{ __('Authentication events for everyone in your group.') }}</p>
-                </div>
+            <div class="flex flex-col gap-4 p-4 xl:flex-row xl:items-center xl:justify-between">
+                <h2 id="activity-log-heading" class="text-sm font-extrabold text-foreground">{{ __('Activity log') }}</h2>
 
                 <nav class="inline-flex flex-wrap gap-1 rounded-xl border border-line bg-white/70 p-1" aria-label="{{ __('Filter activity') }}">
                     @foreach ($filters as $filter)

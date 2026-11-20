@@ -21,8 +21,11 @@ it('shows only authentication events from the current group', function () {
 
     $this->actingAs($user)->get(route('activity.index'))
         ->assertOk()
+        ->assertSee('Activity')
         ->assertSee('Alice Example')
-        ->assertDontSee('Bob Secret');
+        ->assertDontSee('Bob Secret')
+        ->assertDontSee('Group activity')
+        ->assertDontSee('Sign-ins and sign-outs across your workspace');
 });
 
 it('renders the activity page on a tenant domain', function () {

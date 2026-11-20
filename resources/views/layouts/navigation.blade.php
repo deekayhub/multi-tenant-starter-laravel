@@ -1,5 +1,20 @@
 @php
     $dashboardRoute = tenant() ? route('tenant.dashboard') : route('dashboard');
+    $settingsRoute = route('profile.edit');
+    $logoutUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+        tenant() ? 'logout' : 'central.logout',
+        now()->addDay(),
+    );
+
+    if (tenant()) {
+        if (Auth::user()?->can('workspace.view')) {
+            $settingsRoute = route('settings.workspace.edit');
+        } elseif (Auth::user()?->can('users.view')) {
+            $settingsRoute = route('settings.members.index');
+        } elseif (Auth::user()?->can('roles.view')) {
+            $settingsRoute = route('settings.roles.index');
+        }
+    }
 @endphp
 
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
@@ -18,6 +33,10 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="$dashboardRoute" :active="request()->routeIs('dashboard', 'tenant.dashboard')">
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="$settingsRoute" :active="request()->routeIs('settings.*', 'profile.*')">
+                        {{ __('Settings') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -38,15 +57,15 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                        <x-dropdown-link :href="$settingsRoute">
+                            {{ __('Settings') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ $logoutUrl }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
+                            <x-dropdown-link :href="$logoutUrl"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
@@ -74,6 +93,10 @@
             <x-responsive-nav-link :href="$dashboardRoute" :active="request()->routeIs('dashboard', 'tenant.dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="$settingsRoute" :active="request()->routeIs('settings.*', 'profile.*')">
+                {{ __('Settings') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -84,15 +107,15 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                <x-responsive-nav-link :href="$settingsRoute">
+                    {{ __('Settings') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ $logoutUrl }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
+                    <x-responsive-nav-link :href="$logoutUrl"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}

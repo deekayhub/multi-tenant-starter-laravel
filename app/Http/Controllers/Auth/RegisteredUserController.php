@@ -50,18 +50,11 @@ class RegisteredUserController extends Controller
             'tenant_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')],
             'subdomain' => [
-                'nullable',
+                'required',
                 'string',
                 'max:63',
                 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/',
                 'not_in:'.implode(',', self::RESERVED_SUBDOMAINS),
-                Rule::unique('domains', 'domain'),
-            ],
-            'domain' => [
-                'nullable',
-                'string',
-                'max:255',
-                'regex:/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i',
                 Rule::unique('domains', 'domain'),
             ],
             'password' => ['required', 'confirmed', Password::defaults()],
@@ -70,17 +63,6 @@ class RegisteredUserController extends Controller
         $validator->after(function (\Illuminate\Validation\Validator $validator) use ($request): void {
             $centralDomain = (string) config('tenancy.central_domains')[0];
             $subdomain = (string) $request->input('subdomain');
-            $domain = (string) $request->input('domain');
-
-            if ($subdomain === '' && $domain === '') {
-                $validator->errors()->add('subdomain', __('Choose a subdomain or enter a custom domain.'));
-
-                return;
-            }
-
-            if ($domain !== '' && Str::endsWith($domain, '.'.$centralDomain)) {
-                $validator->errors()->add('domain', __('Use the subdomain field for addresses under :domain.', ['domain' => $centralDomain]));
-            }
 
             if ($subdomain !== '' && DB::table('domains')->where('domain', $subdomain.'.'.$centralDomain)->exists()) {
                 $validator->errors()->add('subdomain', __('That subdomain is already in use.'));
@@ -95,9 +77,7 @@ class RegisteredUserController extends Controller
                 'email' => $validated['email'],
             ]);
 
-            foreach (array_filter([$validated['subdomain'] ?? null, $validated['domain'] ?? null]) as $hostname) {
-                $tenant->domains()->create(['domain' => $hostname]);
-            }
+            $tenant->domains()->create(['domain' => $validated['subdomain']]);
 
             $user = User::create([
                 'name' => $validated['name'],
@@ -116,7 +96,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        $host = $validated['domain'] ?: $validated['subdomain'].'.'.config('tenancy.central_domains')[0];
+        $host = $validated['subdomain'].'.'.config('tenancy.central_domains')[0];
 
         return redirect(tenant_route($host, 'tenant.login', [
             'token' => LoginController::issueToken($user, $tenant),
@@ -151,30 +131,16 @@ class RegisteredUserController extends Controller
             'subdomain.regex' => __('Use lowercase letters, numbers and hyphens only.'),
             'subdomain.not_in' => __('That subdomain is reserved.'),
             'subdomain.unique' => __('That subdomain is already in use.'),
-            'domain.regex' => __('Enter a valid domain, for example example.com.'),
-            'domain.unique' => __('That domain is already in use.'),
+            'subdomain.required' => __('Choose a subdomain.'),
         ];
     }
 
     private function normalizeInput(Request $request): void
     {
         $subdomain = $request->string('subdomain')->toString();
-        $domain = $request->string('domain')->toString();
 
         $request->merge([
             'subdomain' => $subdomain !== '' ? Str::lower(trim(Str::replace(' ', '-', $subdomain))) : null,
-            'domain' => $domain !== '' ? $this->normalizeDomain($domain) : null,
         ]);
-    }
-
-    private function normalizeDomain(string $domain): string
-    {
-        $domain = Str::lower(trim($domain));
-        $domain = Str::after($domain, 'https://');
-        $domain = Str::after($domain, 'http://');
-        $domain = Str::before($domain, '/');
-        $domain = Str::before($domain, ':');
-
-        return rtrim($domain, '.');
     }
 }
