@@ -2,20 +2,60 @@
 
 @php
     $isTenant = tenant() !== null;
+    $user = auth()->user();
     $dashboardRoute = $isTenant ? route('tenant.dashboard') : route('dashboard');
-    $activityRoute = $isTenant ? route('tenant.activity.index') : route('activity.index');
+
+    $workspaceItems = [
+        ['label' => __('Overview'), 'icon' => 'grid', 'href' => $dashboardRoute, 'active' => request()->routeIs('dashboard', 'tenant.dashboard')],
+        ['label' => __('Projects'), 'icon' => 'box', 'href' => '#', 'active' => false, 'badge' => '4'],
+        ['label' => __('Tasks'), 'icon' => 'clipboard', 'href' => '#', 'active' => false, 'badge' => '12'],
+    ];
+
+    if (! $isTenant || $user?->can('activity-logs.view')) {
+        $workspaceItems[] = [
+            'label' => __('Activity'),
+            'icon' => 'chart',
+            'href' => $isTenant ? route('tenant.activity.index') : route('activity.index'),
+            'active' => request()->routeIs('activity.index', 'tenant.activity.index'),
+        ];
+    }
 
     $groups = [
         [
             'label' => __('Workspace'),
-            'items' => [
-                ['label' => __('Overview'), 'icon' => 'grid', 'href' => $dashboardRoute, 'active' => request()->routeIs('dashboard', 'tenant.dashboard')],
-                ['label' => __('Projects'), 'icon' => 'box', 'href' => '#', 'active' => false, 'badge' => '4'],
-                ['label' => __('Tasks'), 'icon' => 'clipboard', 'href' => '#', 'active' => false, 'badge' => '12'],
-                ['label' => __('Activity'), 'icon' => 'chart', 'href' => $activityRoute, 'active' => request()->routeIs('activity.index', 'tenant.activity.index')],
-            ],
+            'items' => $workspaceItems,
         ],
-        [
+    ];
+
+    if ($isTenant) {
+        $accessItems = [];
+
+        if ($user?->can('roles.view')) {
+            $accessItems[] = [
+                'label' => __('Roles'),
+                'icon' => 'cog',
+                'href' => route('tenant.roles.index'),
+                'active' => request()->routeIs('tenant.roles.*'),
+            ];
+        }
+
+        if ($user?->can('users.view')) {
+            $accessItems[] = [
+                'label' => __('Team Members'),
+                'icon' => 'users',
+                'href' => route('tenant.members.index'),
+                'active' => request()->routeIs('tenant.members.*'),
+            ];
+        }
+
+        if ($accessItems !== []) {
+            $groups[] = [
+                'label' => __('Access'),
+                'items' => $accessItems,
+            ];
+        }
+    } else {
+        $groups[] = [
             'label' => __('Tenancy'),
             'items' => [
                 ['label' => __('Tenants'), 'icon' => 'storefront', 'href' => '#', 'active' => false, 'badge' => '3'],
@@ -23,13 +63,14 @@
                 ['label' => __('Billing'), 'icon' => 'wallet', 'href' => '#', 'active' => false],
                 ['label' => __('Integrations'), 'icon' => 'plug', 'href' => '#', 'active' => false],
             ],
-        ],
-        [
-            'label' => __('Account'),
-            'items' => [
-                ['label' => __('Settings'), 'icon' => 'cog', 'href' => '#', 'active' => false],
-                ['label' => __('Profile'), 'icon' => 'user', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.*')],
-            ],
+        ];
+    }
+
+    $groups[] = [
+        'label' => __('Account'),
+        'items' => [
+            ['label' => __('Settings'), 'icon' => 'cog', 'href' => '#', 'active' => false],
+            ['label' => __('Profile'), 'icon' => 'user', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.*')],
         ],
     ];
 @endphp

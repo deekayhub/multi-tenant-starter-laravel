@@ -6,8 +6,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Tenant\LoginController;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +21,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
+use Spatie\Permission\PermissionRegistrar;
 
 class RegisteredUserController extends Controller
 {
@@ -103,6 +106,8 @@ class RegisteredUserController extends Controller
                 'tenant_id' => $tenant->getTenantKey(),
             ]);
 
+            $this->assignOwnerRole($tenant, $user);
+
             return [$tenant, $user];
         });
 
@@ -116,6 +121,25 @@ class RegisteredUserController extends Controller
         return redirect(tenant_route($host, 'tenant.login', [
             'token' => LoginController::issueToken($user, $tenant),
         ]));
+    }
+
+    private function assignOwnerRole(Tenant $tenant, User $user): void
+    {
+        $registrar = app(PermissionRegistrar::class);
+        $previousTeamId = $registrar->getPermissionsTeamId();
+        $previousCacheKey = $registrar->cacheKey;
+
+        $registrar->setPermissionsTeamId($tenant->getTenantKey());
+        $registrar->initializeCache();
+        $registrar->cacheKey = (string) config('permission.cache.key').'.tenant.'.$tenant->getTenantKey();
+
+        try {
+            $user->assignRole(Role::findByName(PermissionSeeder::ADMIN_ROLE));
+        } finally {
+            $registrar->setPermissionsTeamId($previousTeamId);
+            $registrar->initializeCache();
+            $registrar->cacheKey = $previousCacheKey;
+        }
     }
 
     /**

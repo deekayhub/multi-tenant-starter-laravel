@@ -34,6 +34,8 @@ it('keeps the dashboard link on the current tenant domain', function () {
     $tenant->domains()->create(['domain' => 'acme']);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
+    assignTenantAdminRole($user, $tenant);
+
     $token = LoginController::issueToken($user, $tenant);
 
     $this->get('http://acme.saas.test/login/'.$token)->assertRedirect();

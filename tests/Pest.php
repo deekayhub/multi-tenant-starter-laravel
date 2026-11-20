@@ -1,6 +1,11 @@
 <?php
 
+use App\Models\Role;
+use App\Models\Tenant;
+use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 /*
@@ -44,7 +49,34 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * @template TReturn
+ *
+ * @param  callable(): TReturn  $callback
+ * @return TReturn
+ */
+function usingTenantPermissionContext(Tenant $tenant, callable $callback): mixed
 {
-    // ..
+    $registrar = app(PermissionRegistrar::class);
+    $previousTeamId = $registrar->getPermissionsTeamId();
+    $previousCacheKey = $registrar->cacheKey;
+
+    $registrar->setPermissionsTeamId($tenant->getTenantKey());
+    $registrar->initializeCache();
+    $registrar->cacheKey = (string) config('permission.cache.key').'.tenant.'.$tenant->getTenantKey();
+
+    try {
+        return $callback();
+    } finally {
+        $registrar->setPermissionsTeamId($previousTeamId);
+        $registrar->initializeCache();
+        $registrar->cacheKey = $previousCacheKey;
+    }
+}
+
+function assignTenantAdminRole(User $user, Tenant $tenant): void
+{
+    usingTenantPermissionContext($tenant, function () use ($user): void {
+        $user->assignRole(Role::findByName(PermissionSeeder::ADMIN_ROLE));
+    });
 }

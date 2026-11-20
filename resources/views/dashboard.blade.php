@@ -15,6 +15,7 @@
             ['name' => 'API keys', 'detail' => __('2 active keys'), 'icon' => 'plug'],
         ];
 
+        $canViewActivity = ! tenant() || auth()->user()?->can('activity-logs.view');
         $activityRoute = tenant() ? route('tenant.activity.index') : route('activity.index');
     @endphp
 
@@ -174,10 +175,12 @@
                         <h2 id="recent-activity-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Recent activity') }}</h2>
                         <p class="mt-1 text-xs text-muted-foreground">{{ __('Sign-ins and sign-outs from your group') }}</p>
                     </div>
-                    <a href="{{ $activityRoute }}" class="inline-flex items-center gap-1.5 rounded text-[11px] font-bold uppercase tracking-[0.1em] text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                        {{ __('View all') }}
-                        <span aria-hidden="true">&rarr;</span>
-                    </a>
+                    @if ($canViewActivity)
+                        <a href="{{ $activityRoute }}" class="inline-flex items-center gap-1.5 rounded text-[11px] font-bold uppercase tracking-[0.1em] text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                            {{ __('View all') }}
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    @endif
                 </div>
 
                 <div class="overflow-x-auto border-t border-line">

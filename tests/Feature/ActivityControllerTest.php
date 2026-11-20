@@ -30,6 +30,7 @@ it('renders the activity page on a tenant domain', function () {
     $tenant->domains()->create(['domain' => 'acme']);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Alice Example']);
+    assignTenantAdminRole($user, $tenant);
 
     activity('authentication')->causedBy($user)->event('login')->log('Logged in');
 
