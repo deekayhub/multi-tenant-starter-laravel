@@ -22,4 +22,35 @@ class Tenant extends BaseTenant
             'data',
         ];
     }
+
+    /**
+     * Resolve the hostname a user should land on after authenticating.
+     */
+    public function preferredHost(): ?string
+    {
+        $domains = $this->domains()->pluck('domain')
+            ->map(fn (mixed $domain): string => (string) $domain);
+
+        $centralDomain = (string) config('tenancy.central_domains')[0];
+
+        $customDomain = $domains->first(
+            fn (string $domain): bool => str_contains($domain, '.') && ! str_ends_with($domain, '.'.$centralDomain)
+        );
+
+        if ($customDomain !== null) {
+            return $customDomain;
+        }
+
+        $fullSubdomain = $domains->first(
+            fn (string $domain): bool => str_ends_with($domain, '.'.$centralDomain)
+        );
+
+        if ($fullSubdomain !== null) {
+            return $fullSubdomain;
+        }
+
+        $subdomain = $domains->first(fn (string $domain): bool => ! str_contains($domain, '.'));
+
+        return $subdomain !== null ? $subdomain.'.'.$centralDomain : null;
+    }
 }

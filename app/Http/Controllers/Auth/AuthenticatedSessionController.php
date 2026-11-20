@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Tenant\LoginController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = $request->user();
+        $tenant = $user->tenant;
+        $host = $tenant?->preferredHost();
+
+        if ($tenant !== null && $host !== null) {
+            return redirect(tenant_route($host, 'tenant.login', [
+                'token' => LoginController::issueToken($user, $tenant),
+            ]));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

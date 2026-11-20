@@ -5,7 +5,7 @@ use App\Models\User;
 it('logs a login event when a user signs in', function () {
     $user = User::factory()->create();
 
-    $this->post('/login', [
+    $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'password',
     ])->assertRedirect(route('dashboard', absolute: false));
@@ -22,7 +22,7 @@ it('logs a login event when a user signs in', function () {
 it('logs a logout event when a user signs out', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->post('/logout')->assertRedirect('/');
+    $this->actingAs($user)->post(route('logout'))->assertRedirect('/');
 
     $this->assertDatabaseHas('activity_log', [
         'log_name' => 'authentication',
@@ -36,7 +36,7 @@ it('logs a logout event when a user signs out', function () {
 it('does not log an unsuccessful login attempt', function () {
     $user = User::factory()->create();
 
-    $this->post('/login', [
+    $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'wrong-password',
     ])->assertSessionHasErrors('email');

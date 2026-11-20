@@ -5,7 +5,7 @@ use App\Models\Tenant;
 use App\Models\User;
 
 it('redirects guests away from the activity page', function () {
-    $this->get(route('activity.index', absolute: false))
+    $this->get(route('activity.index'))
         ->assertRedirect(route('login', absolute: false));
 });
 
@@ -19,7 +19,7 @@ it('shows only authentication events from the current group', function () {
     activity('authentication')->causedBy($user)->event('login')->log('Logged in');
     activity('authentication')->causedBy($otherUser)->event('login')->log('Logged in');
 
-    $this->actingAs($user)->get(route('activity.index', absolute: false))
+    $this->actingAs($user)->get(route('activity.index'))
         ->assertOk()
         ->assertSee('Alice Example')
         ->assertDontSee('Bob Secret');
@@ -49,7 +49,7 @@ it('filters the activity table by event', function () {
     activity('authentication')->causedBy($user)->event('login')->log('Logged in');
     activity('authentication')->causedBy($user)->event('logout')->log('Logged out');
 
-    $this->actingAs($user)->get(route('activity.index', ['event' => 'logout'], false))
+    $this->actingAs($user)->get(route('activity.index', ['event' => 'logout']))
         ->assertOk()
         ->assertSee('Signed out')
         ->assertSee('Alice Example');
@@ -60,7 +60,7 @@ it('escapes user names in the activity table', function () {
 
     activity('authentication')->causedBy($user)->event('login')->log('Logged in');
 
-    $this->actingAs($user)->get(route('activity.index', absolute: false))
+    $this->actingAs($user)->get(route('activity.index'))
         ->assertOk()
         ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)
         ->assertDontSee('<script>alert(1)</script>', false);

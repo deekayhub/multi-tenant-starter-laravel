@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Tenant\LoginController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
@@ -15,9 +16,9 @@ Route::middleware([
         ->middleware('throttle:6,1')
         ->name('tenant.login');
 
-    Route::get('/', function () {
-        return view('dashboard');
-    })->middleware('auth')->name('tenant.dashboard');
+    Route::get('/', [DashboardController::class, 'index'])
+        ->middleware('auth')
+        ->name('tenant.dashboard');
 
     Route::get('/activity', [ActivityController::class, 'index'])
         ->middleware('auth')

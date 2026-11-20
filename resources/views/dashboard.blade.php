@@ -10,14 +10,6 @@
             ['title' => __('Unverified domains'), 'detail' => __('1 domain awaiting verification'), 'tone' => 'warning'],
         ];
 
-        $activity = [
-            ['event' => __('Tenant created'), 'detail' => 'Globex Labs', 'type' => 'create', 'time' => __('12 min ago')],
-            ['event' => __('Member invited'), 'detail' => 'newmember@example.com', 'type' => 'invite', 'time' => __('48 min ago')],
-            ['event' => __('Role updated'), 'detail' => __('Admin → Editor'), 'type' => 'update', 'time' => __('1 hr ago')],
-            ['event' => __('API key rotated'), 'detail' => __('Production key'), 'type' => 'update', 'time' => __('2 hrs ago')],
-            ['event' => __('Plan changed'), 'detail' => __('Starter → Growth'), 'type' => 'update', 'time' => __('3 hrs ago')],
-        ];
-
         $connections = [
             ['name' => 'Webhooks', 'detail' => __('3 endpoints configured'), 'icon' => 'sync'],
             ['name' => 'API keys', 'detail' => __('2 active keys'), 'icon' => 'plug'],
@@ -180,7 +172,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-3 p-5 pb-4">
                     <div>
                         <h2 id="recent-activity-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Recent activity') }}</h2>
-                        <p class="mt-1 text-xs text-muted-foreground">{{ __('Events across all workspaces') }}</p>
+                        <p class="mt-1 text-xs text-muted-foreground">{{ __('Sign-ins and sign-outs from your group') }}</p>
                     </div>
                     <a href="{{ $activityRoute }}" class="inline-flex items-center gap-1.5 rounded text-[11px] font-bold uppercase tracking-[0.1em] text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         {{ __('View all') }}
@@ -199,16 +191,39 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-line">
-                            @foreach ($activity as $row)
+                            @forelse ($recentActivity as $activity)
+                                @php
+                                    $activityUser = $activity->causer;
+                                    $isLogin = $activity->event === 'login';
+                                @endphp
                                 <tr class="transition-colors hover:bg-muted/50">
-                                    <td class="px-5 py-3 font-semibold text-foreground">{{ $row['event'] }}</td>
-                                    <td class="px-5 py-3 text-xs font-medium text-muted-foreground">{{ $row['detail'] }}</td>
-                                    <td class="hidden px-5 py-3 sm:table-cell">
-                                        <span class="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{{ $row['type'] }}</span>
+                                    <td class="px-5 py-3">
+                                        <span @class([
+                                            'inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em]',
+                                            'border-success/25 bg-success/10 text-success' => $isLogin,
+                                            'border-warning/25 bg-warning/10 text-caution' => ! $isLogin,
+                                        ])>
+                                            <x-icon :name="$isLogin ? 'check' : 'logout'" class="h-3.5 w-3.5" />
+                                            {{ $isLogin ? __('Signed in') : __('Signed out') }}
+                                        </span>
                                     </td>
-                                    <td class="whitespace-nowrap px-5 py-3 text-right text-xs font-medium text-muted-foreground">{{ $row['time'] }}</td>
+                                    <td class="px-5 py-3 text-xs font-medium text-muted-foreground">
+                                        {{ $activityUser?->name ?? __('Deleted user') }}
+                                    </td>
+                                    <td class="hidden px-5 py-3 sm:table-cell">
+                                        <span class="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{{ $isLogin ? __('Sign-in') : __('Sign-out') }}</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-5 py-3 text-right text-xs font-medium text-muted-foreground">
+                                        <time datetime="{{ $activity->created_at?->toIso8601String() }}" title="{{ $activity->created_at?->format('M j, Y, g:i A') }}">{{ $activity->created_at?->diffForHumans() }}</time>
+                                    </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-5 py-10 text-center text-xs font-medium text-muted-foreground">
+                                        {{ __('No activity yet. Sign-ins and sign-outs will appear here.') }}
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

@@ -26,7 +26,7 @@ class LogAuthenticationActivity
             ->withProperties([
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
-                'guard' => $event->guardName,
+                'guard' => $event->guard,
                 'tenant_id' => $user->tenant_id ?? null,
             ])
             ->log($isLogin ? 'Logged in' : 'Logged out');

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,9 +15,9 @@ foreach ([$canonicalDomain, ...$centralDomains] as $domain) {
             return view('welcome');
         });
 
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->middleware(['auth', 'verified'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->middleware(['auth', 'verified'])
+            ->name('dashboard');
 
         Route::middleware('auth')->group(function () {
             Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');

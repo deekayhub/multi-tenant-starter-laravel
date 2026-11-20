@@ -1,13 +1,15 @@
 @props(['closable' => false, 'collapsible' => false])
 
 @php
-    $activityRoute = tenant() ? route('tenant.activity.index') : route('activity.index');
+    $isTenant = tenant() !== null;
+    $dashboardRoute = $isTenant ? route('tenant.dashboard') : route('dashboard');
+    $activityRoute = $isTenant ? route('tenant.activity.index') : route('activity.index');
 
     $groups = [
         [
             'label' => __('Workspace'),
             'items' => [
-                ['label' => __('Overview'), 'icon' => 'grid', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
+                ['label' => __('Overview'), 'icon' => 'grid', 'href' => $dashboardRoute, 'active' => request()->routeIs('dashboard', 'tenant.dashboard')],
                 ['label' => __('Projects'), 'icon' => 'box', 'href' => '#', 'active' => false, 'badge' => '4'],
                 ['label' => __('Tasks'), 'icon' => 'clipboard', 'href' => '#', 'active' => false, 'badge' => '12'],
                 ['label' => __('Activity'), 'icon' => 'chart', 'href' => $activityRoute, 'active' => request()->routeIs('activity.index', 'tenant.activity.index')],
@@ -41,7 +43,7 @@
         class="relative flex h-16 shrink-0 items-center gap-3 border-b border-white/10 px-4"
         @if ($collapsible) x-bind:class="sidebarCollapsed ? 'justify-center px-0' : ''" @endif
     >
-        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="{{ __('Starter kit dashboard') }}">
+        <a href="{{ $dashboardRoute }}" class="inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="{{ __('Starter kit dashboard') }}">
             <x-brand-mark class="h-9 w-9" />
             @if ($collapsible)
                 <span class="text-lg font-extrabold tracking-tight" x-show="! sidebarCollapsed">orbit</span>
