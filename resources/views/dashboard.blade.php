@@ -22,6 +22,8 @@
             ['name' => 'Webhooks', 'detail' => __('3 endpoints configured'), 'icon' => 'sync'],
             ['name' => 'API keys', 'detail' => __('2 active keys'), 'icon' => 'plug'],
         ];
+
+        $activityRoute = tenant() ? route('tenant.activity.index') : route('activity.index');
     @endphp
 
     <div class="space-y-7">
@@ -180,7 +182,7 @@
                         <h2 id="recent-activity-heading" class="text-xl font-extrabold tracking-tight text-foreground">{{ __('Recent activity') }}</h2>
                         <p class="mt-1 text-xs text-muted-foreground">{{ __('Events across all workspaces') }}</p>
                     </div>
-                    <a href="#" class="inline-flex items-center gap-1.5 rounded text-[11px] font-bold uppercase tracking-[0.1em] text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                    <a href="{{ $activityRoute }}" class="inline-flex items-center gap-1.5 rounded text-[11px] font-bold uppercase tracking-[0.1em] text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                         {{ __('View all') }}
                         <span aria-hidden="true">&rarr;</span>
                     </a>

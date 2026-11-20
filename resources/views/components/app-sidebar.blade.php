@@ -1,6 +1,8 @@
 @props(['closable' => false, 'collapsible' => false])
 
 @php
+    $activityRoute = tenant() ? route('tenant.activity.index') : route('activity.index');
+
     $groups = [
         [
             'label' => __('Workspace'),
@@ -8,7 +10,7 @@
                 ['label' => __('Overview'), 'icon' => 'grid', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
                 ['label' => __('Projects'), 'icon' => 'box', 'href' => '#', 'active' => false, 'badge' => '4'],
                 ['label' => __('Tasks'), 'icon' => 'clipboard', 'href' => '#', 'active' => false, 'badge' => '12'],
-                ['label' => __('Activity'), 'icon' => 'chart', 'href' => '#', 'active' => false],
+                ['label' => __('Activity'), 'icon' => 'chart', 'href' => $activityRoute, 'active' => request()->routeIs('activity.index', 'tenant.activity.index')],
             ],
         ],
         [
