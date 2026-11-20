@@ -1,29 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+use App\Http\Controllers\Tenant\LoginController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
-/*
-|--------------------------------------------------------------------------
-| Tenant Routes
-|--------------------------------------------------------------------------
-|
-| Here you can register the tenant routes for your application.
-| These routes are loaded by the TenantRouteServiceProvider.
-|
-| Feel free to customize them however you want. Good luck!
-|
-*/
 
 Route::middleware([
     'web',
-    InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
-])->group(function () {
+    InitializeTenancyByDomainOrSubdomain::class,
+])->group(function (): void {
+    Route::get('/login/{token}', LoginController::class)
+        ->middleware('throttle:6,1')
+        ->name('tenant.login');
+
     Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+        return view('dashboard');
+    })->middleware('auth')->name('tenant.dashboard');
 });

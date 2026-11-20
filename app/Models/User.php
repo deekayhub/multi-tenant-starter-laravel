@@ -15,7 +15,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, BelongsToTenant;
+    use BelongsToTenant, HasFactory, Notifiable;
 
     /**
      * Get the attributes that should be cast.

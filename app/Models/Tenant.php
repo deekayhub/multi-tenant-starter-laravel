@@ -2,32 +2,24 @@
 
 namespace App\Models;
 
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
-// use Stancl\Tenancy\Database\Concerns\HasDatabase;
+use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 
 class Tenant extends BaseTenant
 {
+    // Single-database tenancy: no HasDatabase trait.
     use HasDomains;
-    // use HasDatabase; // DON'T USE THIS IN SINGLE DB MODE
 
+    /**
+     * @return list<string>
+     */
     public static function getCustomColumns(): array
     {
         return [
             'id',
             'name',
             'email',
-            'data'
+            'data',
         ];
     }
-
-    /**
-     * For single DB, we store everything in central DB
-     */
-    protected $fillable = [
-        'id',
-        'name',
-        'email',
-        'data',
-    ];
 }

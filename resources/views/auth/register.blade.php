@@ -19,6 +19,29 @@
         </div>
 
         <div>
+            <x-input-label for="tenant_name" :value="__('Workspace name')" />
+            <x-text-input id="tenant_name" type="text" name="tenant_name" :value="old('tenant_name')" placeholder="{{ __('Globex Labs') }}" required />
+            <x-input-error :messages="$errors->get('tenant_name')" name="tenant_name" />
+        </div>
+
+        <div>
+            <x-input-label for="subdomain" :value="__('Subdomain')" />
+            <div class="flex items-center">
+                <x-text-input id="subdomain" type="text" name="subdomain" :value="old('subdomain')" placeholder="{{ __('globex') }}" class="rounded-r-none" autocomplete="off" />
+                <span class="rounded-r-lg border border-l-0 border-line bg-canvas px-3 py-2 text-sm text-muted-foreground">.{{ config('tenancy.central_domains')[0] }}</span>
+            </div>
+            <p class="mt-1.5 text-xs text-muted-foreground">{{ __('Optional if you enter a custom domain.') }}</p>
+            <x-input-error :messages="$errors->get('subdomain')" name="subdomain" />
+        </div>
+
+        <div>
+            <x-input-label for="domain" :value="__('Custom domain')" />
+            <x-text-input id="domain" type="text" name="domain" :value="old('domain')" placeholder="globex.com" class="w-full" autocomplete="off" />
+            <p class="mt-1.5 text-xs text-muted-foreground">{{ __('Optional if you choose a subdomain. Include both to use both addresses.') }}</p>
+            <x-input-error :messages="$errors->get('domain')" name="domain" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email address')" />
             <x-text-input id="email" type="email" name="email" :value="old('email')" placeholder="you@example.com" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" name="email" />
