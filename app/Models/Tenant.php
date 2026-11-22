@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
@@ -11,6 +14,20 @@ class Tenant extends BaseTenant
 {
     // Single-database tenancy: no HasDatabase trait.
     use HasDomains;
+
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_SUSPENDED = 'suspended';
+
+    /** @var list<string> */
+    public const RESERVED_SUBDOMAINS = [
+        'admin', 'api', 'app', 'assets', 'cdn', 'ftp', 'help', 'localhost', 'mail', 'static', 'support', 'www',
+    ];
+
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'status' => self::STATUS_ACTIVE,
+    ];
 
     /**
      * @return list<string>
@@ -37,6 +54,38 @@ class Tenant extends BaseTenant
         $domain = Str::before($domain, ':');
 
         return rtrim($domain, '.');
+    }
+
+    /**
+     * Status is stored in the virtual data column. Existing tenants without
+     * an explicit value are treated as active.
+     */
+    protected function status(): Attribute
+    {
+        return Attribute::get(function (mixed $value): string {
+            return $value === self::STATUS_SUSPENDED ? self::STATUS_SUSPENDED : self::STATUS_ACTIVE;
+        });
+    }
+
+    /**
+     * Restrict the query to active tenants.
+     */
+    #[Scope]
+    protected function active(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query->where('data->status', self::STATUS_ACTIVE)
+                ->orWhereNull('data->status');
+        });
+    }
+
+    /**
+     * Restrict the query to suspended tenants.
+     */
+    #[Scope]
+    protected function suspended(Builder $query): Builder
+    {
+        return $query->where('data->status', self::STATUS_SUSPENDED);
     }
 
     /**

@@ -10,7 +10,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Tenant\LoginController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Middleware\EnsureTenantIsActive;
 use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Features\UserImpersonation;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
@@ -18,7 +20,11 @@ Route::middleware([
     'web',
     PreventAccessFromCentralDomains::class,
     InitializeTenancyByDomainOrSubdomain::class,
+    EnsureTenantIsActive::class,
 ])->group(function (): void {
+    Route::get('/impersonate/{token}', fn (string $token) => UserImpersonation::makeResponse($token))
+        ->name('tenant.impersonate');
+
     Route::get('/login/{token}', LoginController::class)
         ->middleware('throttle:6,1')
         ->name('tenant.login');

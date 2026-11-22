@@ -31,6 +31,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+
+        if ($user->is_super_admin) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
         $tenant = $user->tenant;
         $host = $tenant?->preferredHost();
 

@@ -25,11 +25,6 @@ use Spatie\Permission\PermissionRegistrar;
 
 class RegisteredUserController extends Controller
 {
-    /** @var list<string> */
-    private const RESERVED_SUBDOMAINS = [
-        'admin', 'api', 'app', 'assets', 'cdn', 'ftp', 'help', 'localhost', 'mail', 'static', 'support', 'www',
-    ];
-
     /**
      * Display the registration view.
      */
@@ -54,7 +49,7 @@ class RegisteredUserController extends Controller
                 'string',
                 'max:63',
                 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/',
-                'not_in:'.implode(',', self::RESERVED_SUBDOMAINS),
+                'not_in:'.implode(',', Tenant::RESERVED_SUBDOMAINS),
                 Rule::unique('domains', 'domain'),
             ],
             'password' => ['required', 'confirmed', Password::defaults()],

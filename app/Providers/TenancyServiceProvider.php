@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureTenantIsActive;
 use App\Listeners\SeedTenantPermissions;
 use App\Listeners\UseCentralPermissionCache;
 use App\Listeners\UseTenantPermissionCache;
@@ -129,6 +130,10 @@ class TenancyServiceProvider extends ServiceProvider
             Middleware\InitializeTenancyByDomainOrSubdomain::class,
             Middleware\InitializeTenancyByPath::class,
             Middleware\InitializeTenancyByRequestData::class,
+
+            // The suspension check must run before authentication so every
+            // tenant route renders the same suspended workspace response.
+            EnsureTenantIsActive::class,
         ];
 
         foreach (array_reverse($tenancyMiddleware) as $middleware) {

@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\TenantController as AdminTenantController;
+use App\Http\Controllers\Admin\TenantImpersonationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +30,24 @@ foreach ([$canonicalDomain, ...$centralDomains] as $domain) {
             Route::patch('/profile', [ProfileController::class, 'update'])->name('central.profile.update');
             Route::delete('/profile', [ProfileController::class, 'destroy'])->name('central.profile.destroy');
         });
+
+        Route::middleware(['auth', 'ensure.super_admin'])
+            ->prefix('admin')
+            ->as('admin.')
+            ->group(function (): void {
+                Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+                Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs');
+
+                Route::get('tenants/{tenant}/impersonate', TenantImpersonationController::class)
+                    ->name('tenants.impersonate');
+
+                Route::patch('tenants/{tenant}/toggle-status', [AdminTenantController::class, 'toggleStatus'])
+                    ->name('tenants.toggle-status');
+
+                Route::resource('tenants', AdminTenantController::class)
+                    ->except(['edit', 'update']);
+            });
 
         require __DIR__.'/auth.php';
     });
