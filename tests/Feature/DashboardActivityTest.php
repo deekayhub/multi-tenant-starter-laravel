@@ -24,6 +24,29 @@ it('shows recent authentication activity for the current group', function () {
         ->assertDontSee('Export report');
 });
 
+it('shows tenant kpis, sign-in trend, and team table', function () {
+    $tenant = Tenant::create(['name' => 'Acme']);
+    $tenant->domains()->create(['domain' => 'acme']);
+
+    $otherTenant = Tenant::create(['name' => 'Globex']);
+    $otherUser = User::factory()->create(['tenant_id' => $otherTenant->id, 'name' => 'Bob Secret']);
+
+    $user = User::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Alice Example']);
+    assignTenantAdminRole($user, $tenant);
+
+    activity('authentication')->causedBy($user)->event('login')->log('Logged in');
+    activity('authentication')->causedBy($otherUser)->event('login')->log('Logged in elsewhere');
+
+    $this->actingAs($user)->get('http://acme.saas.test/')
+        ->assertOk()
+        ->assertSee('Team members')
+        ->assertSee('Active roles')
+        ->assertSee('Sign-in activity')
+        ->assertSee('Sign-ins · 30 days')
+        ->assertSee('Alice Example')
+        ->assertDontSee('Bob Secret');
+});
+
 it('shows an empty state when the group has no activity', function () {
     $user = User::factory()->create();
 

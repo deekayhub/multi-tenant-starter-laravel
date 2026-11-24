@@ -1,13 +1,13 @@
 <x-guest-layout :title="__('Create account')">
-    <div class="border-b border-line pb-6">
+    <div class="border-b border-line pb-7">
         <p class="eyebrow">{{ __('Get started') }}</p>
-        <h1 class="mt-2.5 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{{ __('A clean slate.') }}</h1>
+        <h1 class="mt-2.5 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{{ __('A clean slate.') }}</h1>
         <p class="mt-2 text-sm leading-6 text-muted-foreground">
             {{ __('Create a workspace on its own subdomain. Everything shown here is placeholder content.') }}
         </p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="form-grid mt-6">
+    <form method="POST" action="{{ route('register') }}" class="form-grid mt-8 gap-y-5">
         @csrf
 
         <x-form-error-summary :errors="$errors" class="form-field-full" />
@@ -28,7 +28,7 @@
             <x-input-label for="subdomain" :value="__('Subdomain')" />
             <div class="flex items-center">
                 <x-text-input id="subdomain" type="text" name="subdomain" :value="old('subdomain')" placeholder="{{ __('globex') }}" class="rounded-r-none" autocomplete="off" />
-                <span class="flex h-11 items-center rounded-r-lg border border-l-0 border-line bg-canvas px-3 text-sm text-muted-foreground">.{{ config('tenancy.central_domains')[0] }}</span>
+                <span class="flex h-11 items-center rounded-r-lg border border-l-0 border-line bg-muted/60 px-3 text-sm text-muted-foreground">.{{ config('tenancy.central_domains')[0] }}</span>
             </div>
             <p class="mt-1.5 text-xs text-muted-foreground">{{ __('This will be your workspace address. You can add a custom domain later in settings.') }}</p>
             <x-input-error :messages="$errors->get('subdomain')" name="subdomain" />
@@ -52,8 +52,8 @@
             <x-input-error :messages="$errors->get('password_confirmation')" name="password_confirmation" />
         </div>
 
-        <div class="form-field-full flex justify-end border-t border-line pt-4">
-            <button type="submit" class="btn-primary">
+        <div class="form-field-full border-t border-line pt-6">
+            <button type="submit" class="btn-primary w-full">
                 {{ __('Create account') }}
                 <span aria-hidden="true">&rarr;</span>
             </button>
@@ -62,7 +62,7 @@
 
     <p class="mt-6 border-t border-line pt-5 text-sm text-muted-foreground">
         {{ __('Already have an account?') }}
-        <a href="{{ route('login') }}" class="rounded font-bold text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        <a href="{{ route('login') }}" class="rounded font-medium text-foreground underline decoration-line underline-offset-4 transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
             {{ __('Sign in') }}
         </a>
     </p>

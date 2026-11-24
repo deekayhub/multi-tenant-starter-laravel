@@ -142,7 +142,11 @@ class Tenant extends BaseTenant
     /** @return Collection<int, string> */
     private function domainNames(): Collection
     {
-        return $this->domains()->pluck('domain')
+        $domains = $this->relationLoaded('domains')
+            ? $this->getRelation('domains')
+            : $this->domains()->get();
+
+        return $domains->pluck('domain')
             ->map(fn (mixed $domain): string => (string) $domain)
             ->values();
     }

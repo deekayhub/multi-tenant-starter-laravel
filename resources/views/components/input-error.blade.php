@@ -4,7 +4,7 @@
     <ul
         @if ($name) id="{{ $name }}-error" @endif
         role="alert"
-        {{ $attributes->merge(['class' => 'mt-2 space-y-1 text-xs font-medium text-destructive']) }}
+        {{ $attributes->merge(['class' => 'mt-1.5 space-y-0.5 text-xs font-medium leading-5 text-destructive']) }}
     >
         @foreach ((array) $messages as $message)
             <li>{{ $message }}</li>

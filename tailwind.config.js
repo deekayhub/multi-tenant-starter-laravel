@@ -12,54 +12,54 @@ export default {
     theme: {
         extend: {
             colors: {
-                /* Core semantic tokens — Skill SaaS default */
+                /* Shadcn-inspired neutral SaaS tokens */
                 primary: {
-                    DEFAULT: '#2563EB',
-                    dark: '#1D4ED8',
-                    soft: '#EFF6FF',
+                    DEFAULT: '#18181B',
+                    dark: '#3F3F46',
+                    soft: '#F4F4F5',
                 },
-                secondary: '#3B82F6',
+                secondary: '#FAFAFA',
                 accent: {
-                    DEFAULT: '#EA580C',
-                    dark: '#C2410C',
-                    soft: '#FFF7ED',
+                    DEFAULT: '#F4F4F5',
+                    dark: '#E4E4E7',
+                    soft: '#FAFAFA',
                 },
-                canvas: '#F8FAFC',
-                foreground: '#1E293B',
+                canvas: '#FAFAFA',
+                foreground: '#09090B',
                 card: '#FFFFFF',
-                muted: '#E9EFF8',
-                'muted-foreground': '#475569',
-                line: '#E2E8F0',
+                muted: '#F4F4F5',
+                'muted-foreground': '#71717A',
+                line: '#E4E4E7',
                 destructive: '#DC2626',
-                success: '#059669',
+                success: '#16A34A',
                 warning: '#D97706',
 
                 /* Backwards-compatible aliases used across the Blade views */
-                paper: '#F8FAFC',
+                paper: '#FAFAFA',
                 surface: '#FFFFFF',
-                ink: '#1E293B',
-                'ink-2': '#475569',
-                'ink-3': '#5C6779',
-                'accent-soft': '#FFF7ED',
-                positive: '#059669',
+                ink: '#09090B',
+                'ink-2': '#71717A',
+                'ink-3': '#A1A1AA',
+                'accent-soft': '#F4F4F5',
+                positive: '#16A34A',
                 caution: '#B45309',
                 critical: '#DC2626',
             },
 
             fontFamily: {
-                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
 
             boxShadow: {
-                glass: '0 8px 32px -8px rgba(15, 23, 42, 0.16)',
-                'glass-lg': '0 24px 60px -20px rgba(15, 23, 42, 0.35)',
-                'blue-glow': '0 12px 30px -10px rgba(37, 99, 235, 0.55)',
-                'accent-glow': '0 12px 30px -10px rgba(234, 88, 12, 0.45)',
+                glass: '0 1px 2px 0 rgba(9, 9, 11, 0.04), 0 8px 24px -16px rgba(9, 9, 11, 0.18)',
+                'glass-lg': '0 1px 2px 0 rgba(9, 9, 11, 0.05), 0 24px 48px -24px rgba(9, 9, 11, 0.25)',
+                'blue-glow': '0 1px 2px 0 rgba(9, 9, 11, 0.06)',
+                'accent-glow': '0 1px 2px 0 rgba(9, 9, 11, 0.06)',
             },
 
             backgroundImage: {
-                'brand-gradient': 'linear-gradient(135deg, #2563EB 0%, #4338CA 52%, #6D28D9 100%)',
-                'brand-sheen': 'radial-gradient(circle at 20% 10%, rgba(255,255,255,.28), transparent 42%)',
+                'brand-gradient': 'linear-gradient(135deg, #18181B 0%, #27272A 55%, #3F3F46 100%)',
+                'brand-sheen': 'radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.1), transparent 45%)',
             },
         },
     },

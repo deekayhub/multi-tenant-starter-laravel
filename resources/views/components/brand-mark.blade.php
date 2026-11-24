@@ -3,8 +3,8 @@
 <svg {{ $attributes->merge(['class' => $class, 'viewBox' => '0 0 32 32', 'fill' => 'none', 'aria-hidden' => 'true']) }}>
     <defs>
         <linearGradient id="orbit-mark" x1="0" y1="0" x2="1" y2="1">
-            <stop stop-color="#60A5FA" />
-            <stop offset="1" stop-color="#4338CA" />
+            <stop stop-color="#3F3F46" />
+            <stop offset="1" stop-color="#09090B" />
         </linearGradient>
     </defs>
     <rect width="32" height="32" rx="9" fill="url(#orbit-mark)" />

@@ -1,10 +1,10 @@
 <section>
     <header class="border-b border-line pb-5">
-        <h2 class="text-2xl font-extrabold leading-tight text-foreground">{{ __('Update password') }}</h2>
-        <p class="mt-2 text-sm leading-6 text-muted-foreground">{{ __('Use a long, unique password to keep your account secure.') }}</p>
+        <h2 class="text-lg font-semibold leading-tight tracking-tight text-foreground">{{ __('Update password') }}</h2>
+        <p class="mt-1.5 text-sm leading-6 text-muted-foreground">{{ __('Use a long, unique password to keep your account secure.') }}</p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="form-grid mt-5">
+    <form method="post" action="{{ route($passwordUpdateRoute ?? 'password.update') }}" class="form-grid mt-6 gap-x-5 gap-y-5">
         @csrf
         @method('put')
 
@@ -31,7 +31,7 @@
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" name="password_confirmation" />
         </div>
 
-        <div class="form-field-full flex items-center gap-4 border-t border-line pt-4">
+        <div class="form-field-full flex flex-wrap items-center gap-4 border-t border-line pt-6">
             <x-primary-button>{{ __('Update password') }}</x-primary-button>
 
             @if (session('status') === 'password-updated')

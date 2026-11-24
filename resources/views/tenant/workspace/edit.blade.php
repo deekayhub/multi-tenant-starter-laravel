@@ -1,7 +1,7 @@
 <x-settings-layout :title="__('Workspace')">
     <div class="space-y-5">
         @if (session('status'))
-            <div role="status" class="rounded-xl border border-success/25 bg-success/10 px-4 py-3 text-sm font-semibold text-success">
+            <div role="status" class="rounded-xl border border-success/25 bg-success/10 px-4 py-3 text-sm font-medium text-success">
                 {{ session('status') }}
             </div>
         @endif
@@ -39,9 +39,11 @@
                     <x-input-error :messages="$errors->get('email')" />
                 </div>
 
+                <div class="form-field-full border-t border-line pt-5"></div>
+
                 <div class="form-field">
                     <p class="field-label">{{ __('Workspace ID') }}</p>
-                    <p class="flex h-11 items-center rounded-lg border border-line bg-muted/40 px-3.5 font-mono text-xs text-muted-foreground">{{ $tenant->getKey() }}</p>
+                    <p class="flex h-11 items-center rounded-lg border border-line bg-muted/50 px-3.5 font-mono text-xs text-muted-foreground">{{ $tenant->getKey() }}</p>
                 </div>
 
                 <div class="form-field">
@@ -51,13 +53,15 @@
                             type="text"
                             value="{{ $subdomain }}"
                             disabled
-                            class="field-input rounded-r-none bg-muted/40 text-muted-foreground"
+                            class="field-input rounded-r-none bg-muted/50 text-muted-foreground"
                             aria-label="{{ __('Subdomain') }}"
                         >
-                        <span class="flex h-11 items-center rounded-r-lg border border-l-0 border-line bg-canvas px-3 text-sm text-muted-foreground">.{{ config('tenancy.central_domains')[0] }}</span>
+                        <span class="flex h-11 items-center rounded-r-lg border border-l-0 border-line bg-muted/50 px-3 text-sm text-muted-foreground">.{{ config('tenancy.central_domains')[0] }}</span>
                     </div>
                     <p class="mt-1.5 text-xs text-muted-foreground">{{ __('Your subdomain cannot be changed from this page.') }}</p>
                 </div>
+
+                <div class="form-field-full border-t border-line pt-5"></div>
 
                 <div class="form-field-full">
                     <label for="custom_domain" class="field-label">{{ __('Custom domain') }}</label>
@@ -74,7 +78,7 @@
                     <x-input-error :messages="$errors->get('custom_domain')" />
                 </div>
 
-                <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-4">
+                <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-5">
                     <button type="submit" class="btn-primary">{{ __('Save changes') }}</button>
                 </div>
             </form>

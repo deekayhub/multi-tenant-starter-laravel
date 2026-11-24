@@ -1,14 +1,14 @@
 <section>
     <header class="border-b border-line pb-5">
-        <h2 class="text-2xl font-extrabold leading-tight text-foreground">{{ __('Profile information') }}</h2>
-        <p class="mt-2 text-sm leading-6 text-muted-foreground">{{ __("Update your account's name and email address.") }}</p>
+        <h2 class="text-lg font-semibold leading-tight tracking-tight text-foreground">{{ __('Profile information') }}</h2>
+        <p class="mt-1.5 text-sm leading-6 text-muted-foreground">{{ __("Update your account's name and email address.") }}</p>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+    <form id="send-verification" method="post" action="{{ route($verificationSendRoute ?? 'verification.send') }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="form-grid mt-5">
+    <form method="post" action="{{ route($profileUpdateRoute ?? 'profile.update') }}" class="form-grid mt-6 gap-x-5 gap-y-5">
         @csrf
         @method('patch')
 
@@ -26,7 +26,7 @@
             <x-input-error :messages="$errors->get('email')" name="email" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div class="mt-3 rounded-xl border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-muted-foreground">
+                <div class="mt-4 rounded-lg border border-warning/25 bg-warning/5 px-4 py-3 text-sm leading-6 text-muted-foreground">
                     <p>{{ __('Your email address is unverified.') }}</p>
                     <button form="send-verification" class="mt-1 rounded font-semibold text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                         {{ __('Click here to re-send the verification email.') }}
@@ -39,7 +39,7 @@
             @endif
         </div>
 
-        <div class="form-field-full flex items-center gap-4 border-t border-line pt-4">
+        <div class="form-field-full flex flex-wrap items-center gap-4 border-t border-line pt-6">
             <x-primary-button>{{ __('Save changes') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')

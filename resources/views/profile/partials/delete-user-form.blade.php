@@ -1,7 +1,7 @@
 <section class="space-y-6">
     <header class="border-b border-line pb-5">
-        <h2 class="text-2xl font-extrabold leading-tight text-destructive">{{ __('Delete account') }}</h2>
-        <p class="mt-2 text-sm leading-6 text-muted-foreground">
+        <h2 class="text-lg font-semibold leading-tight tracking-tight text-destructive">{{ __('Delete account') }}</h2>
+        <p class="mt-1.5 text-sm leading-6 text-muted-foreground">
             {{ __('Once your account is deleted, its data is permanently removed. Download anything you wish to keep first.') }}
         </p>
     </header>
@@ -12,13 +12,13 @@
     >{{ __('Delete account') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" :label="__('Confirm account deletion')" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="form-grid p-6">
+        <form method="post" action="{{ route($profileDestroyRoute ?? 'profile.destroy') }}" class="form-grid gap-y-5 p-6">
             @csrf
             @method('delete')
 
-            <h2 class="text-2xl font-extrabold text-foreground">{{ __('Are you sure?') }}</h2>
+            <h2 class="text-lg font-semibold tracking-tight text-foreground">{{ __('Are you sure?') }}</h2>
 
-            <p class="mt-3 text-sm leading-6 text-muted-foreground">
+            <p class="mt-2 text-sm leading-6 text-muted-foreground">
                 {{ __('This cannot be undone. Enter your password to confirm.') }}
             </p>
 

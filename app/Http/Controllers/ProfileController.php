@@ -22,6 +22,16 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the central user's profile form.
+     */
+    public function editCentral(Request $request): View
+    {
+        return view('admin.profile', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
@@ -34,7 +44,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route(tenant() ? 'profile.edit' : 'central.profile.edit')->with('status', 'profile-updated');
     }
 
     /**

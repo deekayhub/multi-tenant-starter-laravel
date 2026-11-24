@@ -76,7 +76,7 @@
                     @php
                         $isProtectedAdmin = $isSoleAdmin && $role->name === \Database\Seeders\PermissionSeeder::ADMIN_ROLE;
                     @endphp
-                    <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-muted/30 px-3 py-3 transition-colors hover:bg-white/70">
+                    <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-card p-3 shadow-sm transition-colors hover:border-zinc-300 hover:bg-muted/30">
                         @if ($isProtectedAdmin)
                             <input type="hidden" name="roles[]" value="{{ $role->getKey() }}">
                         @endif
@@ -90,16 +90,16 @@
                         >
                         <span class="min-w-0">
                             <span class="flex flex-wrap items-center gap-2">
-                                <span class="block text-xs font-bold text-foreground">{{ $role->name }}</span>
+                                <span class="block text-sm font-semibold text-foreground">{{ $role->name }}</span>
                                 @if ($role->name === \Database\Seeders\PermissionSeeder::ADMIN_ROLE)
-                                    <span class="rounded-md border border-warning/25 bg-warning/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-caution">{{ __('Protected') }}</span>
+                                    <span class="rounded-md border border-warning/25 bg-warning/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-caution">{{ __('Protected') }}</span>
                                 @endif
                             </span>
                             <span class="mt-1 block text-[11px] leading-4 text-muted-foreground">
                                 {{ __('Grants :count permissions.', ['count' => $role->permissions_count ?? 0]) }}
                             </span>
                             @if ($isProtectedAdmin)
-                                <span class="mt-1 block text-[11px] font-semibold text-caution">{{ __('Required while this is the last Admin.') }}</span>
+                                <span class="mt-1 block text-[11px] font-medium text-caution">{{ __('Required while this is the last Admin.') }}</span>
                             @endif
                         </span>
                     </label>
@@ -111,7 +111,7 @@
         <x-input-error :messages="$errors->get('roles.*')" />
     </div>
 
-    <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-4">
+    <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-5">
         <button type="submit" class="btn-primary">{{ $submitLabel }}</button>
         <a href="{{ route('settings.members.index') }}" class="btn-secondary">{{ __('Cancel') }}</a>
     </div>

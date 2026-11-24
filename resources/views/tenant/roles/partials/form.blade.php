@@ -17,7 +17,7 @@
             class="field-input @error('name') field-input-error @enderror"
             aria-describedby="name-help"
         >
-        <p id="name-help" class="mt-2 text-xs text-muted-foreground">{{ __('Use a short, recognizable name such as Manager or Billing Admin.') }}</p>
+        <p id="name-help" class="mt-1.5 text-xs text-muted-foreground">{{ __('Use a short, recognizable name such as Manager or Billing Admin.') }}</p>
         <x-input-error :messages="$errors->get('name')" />
     </div>
 
@@ -38,34 +38,34 @@
         </div>
 
         @if ($permissionGroups !== [])
-            <div class="mt-4 overflow-x-auto rounded-xl border border-line">
+            <div class="mt-4 overflow-x-auto rounded-xl border border-line shadow-sm">
                 <table class="min-w-full text-left text-sm">
                     <caption class="sr-only">{{ __('Permission matrix') }}</caption>
                     <thead>
-                        <tr class="border-b border-line bg-muted/40 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                            <th scope="col" class="px-4 py-3 font-bold">{{ __('Permission') }}</th>
-                            <th scope="col" class="w-24 px-4 py-3 text-right font-bold">{{ __('Access') }}</th>
+                        <tr class="border-b border-line bg-muted/50 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                            <th scope="col" class="px-4 py-3 font-semibold">{{ __('Permission') }}</th>
+                            <th scope="col" class="w-24 px-4 py-3 text-right font-semibold">{{ __('Access') }}</th>
                         </tr>
                     </thead>
                     @foreach ($permissionGroups as $group)
-                        <tbody class="border-b border-line last:border-b-0">
+                        <tbody class="divide-y divide-line border-b border-line last:border-b-0">
                             <tr class="bg-muted/30">
                                 <th colspan="2" scope="colgroup" class="px-4 py-2.5">
                                     <div class="flex flex-wrap items-center justify-between gap-3">
-                                        <span class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-foreground">{{ $group['label'] }}</span>
+                                        <span class="text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground">{{ $group['label'] }}</span>
                                         <button
                                             type="button"
                                             data-toggle-permission-group="{{ $group['key'] }}"
                                             data-select-label="{{ __('Select All') }}"
                                             data-clear-label="{{ __('Deselect All') }}"
                                             aria-pressed="false"
-                                            class="rounded text-[11px] font-bold text-primary transition-colors hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                            class="rounded text-[11px] font-semibold text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                         >{{ __('Select All') }}</button>
                                     </div>
                                 </th>
                             </tr>
                             @foreach ($group['permissions'] as $permission)
-                                <tr class="transition-colors hover:bg-white/60">
+                                <tr class="transition-colors hover:bg-muted/40">
                                     <td class="px-4 py-3">
                                         <label class="flex cursor-pointer items-start gap-3">
                                             <input
@@ -78,12 +78,12 @@
                                                 class="mt-0.5 h-4 w-4 rounded border-line text-primary focus:ring-primary"
                                             >
                                             <span class="min-w-0">
-                                                <span class="block font-mono text-xs font-semibold text-foreground">{{ $permission->name }}</span>
+                                                <span class="block font-mono text-xs font-medium text-foreground">{{ $permission->name }}</span>
                                                 <span class="mt-0.5 block text-[11px] text-muted-foreground">{{ \Illuminate\Support\Str::headline(\Illuminate\Support\Str::after($permission->name, '.')) }}</span>
                                             </span>
                                         </label>
                                     </td>
-                                    <td class="px-4 py-3 text-right text-[11px] font-semibold text-muted-foreground">{{ __('Allow') }}</td>
+                                    <td class="px-4 py-3 text-right text-[11px] font-medium text-muted-foreground">{{ __('Allow') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -98,7 +98,7 @@
         <x-input-error :messages="$errors->get('permissions.*')" />
     </div>
 
-    <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-4">
+    <div class="form-field-full flex flex-wrap items-center gap-3 border-t border-line pt-5">
         <button type="submit" class="btn-primary">{{ $submitLabel }}</button>
         <a href="{{ route('settings.roles.index') }}" class="btn-secondary">{{ __('Cancel') }}</a>
     </div>

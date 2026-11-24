@@ -45,6 +45,8 @@ class WorkspaceController extends Controller
             $tenant->domains()->create(['domain' => $validated['custom_domain']]);
         }
 
+        $tenant->unsetRelation('domains');
+
         return redirect()->route('settings.workspace.edit')
             ->with('status', __('Workspace updated.'));
     }
